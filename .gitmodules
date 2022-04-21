@@ -1,0 +1,3 @@
+[submodule "lib/VbaCompression"]
+	path = lib/VbaCompression
+	url = https://github.com/NetOfficeFw/VbaCompression
