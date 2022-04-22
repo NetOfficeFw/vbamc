@@ -51,6 +51,15 @@ namespace vbamc
             var projectWmContent = projectWm.Generate();
             projectWmStream.SetData(projectWmContent);
 
+            // VBA storage
+            var vbaStorage = storage.RootStorage.AddStorage(StorageId.VBA);
+
+            // _VBA_PROJECT stream
+            var vbaProjectStream = vbaStorage.AddStream(StreamId.VbaProject);
+            var vbaProject = new VbaProjectStream();
+            var vbaProjectContent = vbaProject.Generate();
+            vbaProjectStream.SetData(vbaProjectContent);
+
             storage.Save(targetPath);
         }
     }
