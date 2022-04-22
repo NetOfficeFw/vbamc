@@ -64,13 +64,14 @@ namespace vbamc
             // dir stream
             var dirStream = vbaStorage.AddStream(StreamId.Dir);
             var dir = new DirStream();
-            var dirContent = dir.GetData(this);
+            var dirContent = dir.GetData(project);
             var compressed = VbaCompression.Compress(dirContent);
             dirStream.SetData(compressed);
 
             // TODO: remove
             var dirStreamDebug = vbaStorage.AddStream(StreamId.Dir + "_Debug");
             dirStreamDebug.SetData(dirContent);
+            File.WriteAllBytes("dir_debug.bin", dirContent);
 
             storage.Save(targetPath);
         }
