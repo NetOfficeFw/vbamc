@@ -1,4 +1,5 @@
 ﻿using System;
+using Kavod.Vba.Compression;
 using OpenMcdf;
 using vbamc.Vba;
 
@@ -59,6 +60,17 @@ namespace vbamc
             var vbaProject = new VbaProjectStream();
             var vbaProjectContent = vbaProject.Generate();
             vbaProjectStream.SetData(vbaProjectContent);
+
+            // dir stream
+            var dirStream = vbaStorage.AddStream(StreamId.Dir);
+            var dir = new DirStream();
+            var dirContent = dir.GetData(this);
+            var compressed = VbaCompression.Compress(dirContent);
+            dirStream.SetData(compressed);
+
+            // TODO: remove
+            var dirStreamDebug = vbaStorage.AddStream(StreamId.Dir + "_Debug");
+            dirStreamDebug.SetData(dirContent);
 
             storage.Save(targetPath);
         }
