@@ -1,6 +1,9 @@
 ﻿using Kavod.Vba.Compression;
 using OpenMcdf;
+using System.Text;
+using vbad;
 
+Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 Console.WriteLine("VBA Project Decompiler");
 
@@ -13,6 +16,7 @@ var vba = new CompoundFile(source);
 var root = vba.RootStorage;
 
 root.VisitEntries(item => ProcessFile(root, "", item), false);
+ProcessDirAndModules(root.GetStorage("VBA"));
 
 Console.WriteLine();
 Console.WriteLine($"  vbaProject.bin -> {targetPath}");
@@ -33,9 +37,12 @@ void ProcessFile(CFStorage storage, string directory, CFItem item)
             try
             {
                 data = VbaCompression.Decompress(data);
+
+                var modules = DirStream.GetModules(data);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
             }
         }
         
@@ -51,5 +58,35 @@ void ProcessFile(CFStorage storage, string directory, CFItem item)
         }
 
         s2.VisitEntries(item => ProcessFile(s2, s2.Name, item), false);
+    }
+}
+
+
+void ProcessDirAndModules(CFStorage vbaStorage)
+{
+    var dir = vbaStorage.GetStream("dir");
+    var data = dir.GetData();
+    data = VbaCompression.Decompress(data);
+    var target = Path.Combine(targetPath, "vba", "dir.bin");
+
+    File.WriteAllBytes(target, data);
+
+    var modules = DirStream.GetModules(data);
+    foreach (var module in modules)
+    {
+        var name = module.Name;
+        var targetVbBin = Path.Combine(targetPath, "vba", name + ".bin");
+        var targetVbText = Path.Combine(targetPath, "vba", name + ".vb");
+
+        var stream = vbaStorage.GetStream(name);
+        Span<byte> dataVb = stream.GetData();
+        var dataVbBin = dataVb.Slice((int)module.Offset).ToArray();
+        File.WriteAllBytes(targetVbBin, dataVbBin);
+        
+        dataVb = VbaCompression.Decompress(dataVbBin);
+
+        var sourceCode = Encoding.GetEncoding(1252).GetString(dataVb);
+
+        File.WriteAllText(targetVbText, sourceCode);
     }
 }
