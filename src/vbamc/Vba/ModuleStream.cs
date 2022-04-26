@@ -18,7 +18,7 @@ namespace vbamc.Vba
             var streamName = this.Module.Name;
             var stream = storage.AddStream(streamName);
 
-            var content = this.Module.Content;
+            var content = this.Module.ToModuleCode();
             var contentBytes = VbaEncodings.Default.GetBytes(content);
             var compressedBytes = VbaCompression.Compress(contentBytes);
 
