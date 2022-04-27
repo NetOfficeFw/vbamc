@@ -5,6 +5,7 @@ namespace vbamc.Vba
     public class InformationRecord
     {
         public const short SysKindId = 0x0001;
+        public const short CompatVersionId = 0x004A;
         public const short LcidId = 0x0002;
         public const short LcidInvokeId = 0x0014;
         public const short CodePageId = 0x0003;
@@ -26,6 +27,8 @@ namespace vbamc.Vba
         public string ProjectName { get; set; }
         
         public string ProjectDescription { get; set; }
+
+        public int CompatVersion => 2;
 
         public int Lcid => LcidValue;
 
@@ -62,6 +65,11 @@ namespace vbamc.Vba
             writer.Write(SysKindId);
             writer.Write(4);
             writer.Write((int)this.SysKind);
+
+            // PROJECTCOMPATVERSION record
+            writer.Write(CompatVersionId);
+            writer.Write(4);
+            writer.Write(this.CompatVersion);
 
             // PROJECTLCID record
             writer.Write(LcidId);

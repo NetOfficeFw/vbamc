@@ -6,6 +6,7 @@ namespace vbad
     public static class DirStream
     {
         public const short SysKindId = 0x0001;
+        public const short CompatVersionId = 0x004A;
         public const short LcidId = 0x0002;
         public const short LcidInvokeId = 0x0014;
         public const short CodePageId = 0x0003;
@@ -38,6 +39,7 @@ namespace vbad
 
             // Information record
             reader.ReadRecord(SysKindId);
+            reader.ReadRecord(CompatVersionId);
             reader.ReadRecord(LcidId);
             reader.ReadRecord(LcidInvokeId);
             reader.ReadRecord(CodePageId);
