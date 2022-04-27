@@ -68,6 +68,13 @@ namespace vbamc
             var compressed = VbaCompression.Compress(dirContent);
             dirStream.SetData(compressed);
 
+            // module streams
+            foreach (var module in this.modules)
+            {
+                var moduleStream = new ModuleStream(module);
+                moduleStream.WriteTo(vbaStorage);
+            }
+
             // TODO: remove
             File.WriteAllBytes("dir_debug.bin", dirContent);
 

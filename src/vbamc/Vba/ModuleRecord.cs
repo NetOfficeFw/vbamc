@@ -21,7 +21,16 @@ namespace vbamc.Vba
         public const ushort CookieValue = 0xFFFF;
         public const ushort TerminatorValue = 0x002B;
         public const uint ReservedValue = 0;
-        
+
+        /// <summary>
+        /// Offset to the module data in the module stream.
+        /// </summary>
+        /// <remarks>
+        /// We always store module at the offset 0 as we do not generate
+        /// any performance cache data for the module.
+        /// </remarks>
+        public const uint ModuleOffset = 0;
+
         public ModuleRecord(ModuleUnit module)
         {
             this.Module = module;
@@ -72,8 +81,7 @@ namespace vbamc.Vba
             // MODULEOFFSET record
             writer.Write(OffsetId);
             writer.Write(sizeof(uint));
-            // TODO: implement the offset value
-            writer.Write(0);
+            writer.Write(ModuleOffset);
 
             // MODULEHELPCONTEXT record
             writer.Write(HelpContextId);
