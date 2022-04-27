@@ -9,12 +9,12 @@ namespace vbamc.Vba
 
         public const ushort CookieValue = 0xFFFF;
 
-        public ModulesRecord(IOrderedEnumerable<ModuleUnit> modules)
+        public ModulesRecord(ICollection<ModuleUnit> modules)
         {
             this.Modules = modules;
         }
 
-        public IOrderedEnumerable<ModuleUnit> Modules { get; }
+        public ICollection<ModuleUnit> Modules { get; }
 
         public void WriteTo(BinaryWriter writer)
         {

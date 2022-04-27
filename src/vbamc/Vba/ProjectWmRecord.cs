@@ -3,12 +3,12 @@ namespace vbamc.Vba
 {
     public class ProjectWmRecord
     {
-        public ProjectWmRecord(IOrderedEnumerable<string> modules)
+        public ProjectWmRecord(ICollection<string> modules)
         {
             this.Modules = modules;
         }
 
-        public IOrderedEnumerable<string> Modules { get; }
+        public ICollection<string> Modules { get; }
 
         public byte[] Generate()
         {

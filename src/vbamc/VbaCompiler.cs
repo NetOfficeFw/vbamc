@@ -7,7 +7,7 @@ namespace vbamc
 {
     public class VbaCompiler
     {
-        private IDictionary<string, ModuleUnit> modules = new Dictionary<string, ModuleUnit>();
+        private IList<ModuleUnit> modules = new List<ModuleUnit>();
 
         public Guid ProjectId { get; set; }
 
@@ -16,18 +16,18 @@ namespace vbamc
         public void AddModule(string path)
         {
             var module = ModuleUnit.FromFile(path, ModuleUnitType.Module);
-            this.modules.Add(module.Name, module);
+            this.modules.Add(module);
         }
         
         public void AddClass(string path)
         {
             var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class);
-            this.modules.Add(@class.Name, @class);
+            this.modules.Add(@class);
         }
 
         public void Compile(string targetPath)
         {
-            var moduleNames = this.modules.Keys.OrderBy(k => k);
+            var moduleNames = this.modules.Select(m => m.Name).ToList();
 
             var storage = new CompoundFile();
 
@@ -36,7 +36,7 @@ namespace vbamc
             var project = new ProjectRecord();
             project.Id = this.ProjectId;
             project.Name = this.ProjectName;
-            project.Modules = this.modules.Values.OrderBy(v => v.Name);
+            project.Modules = this.modules;
 
             // dummy values
             project.ProtectionState = "5351A4A28AA68AA68AA68AA6";

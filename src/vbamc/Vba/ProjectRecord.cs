@@ -35,7 +35,7 @@ namespace vbamc.Vba
 
         public IList<string> HostExtenders { get; }
 
-        public IOrderedEnumerable<ModuleUnit> Modules { get; set; }
+        public ICollection<ModuleUnit> Modules { get; set; }
 
         public byte[] Generate()
         {
