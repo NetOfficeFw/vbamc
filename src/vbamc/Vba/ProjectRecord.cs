@@ -42,7 +42,7 @@ namespace vbamc.Vba
             var memory = new MemoryStream();
             var writer = new BinaryWriter(memory);
             
-            writer.WriteLine($@"ID=""{this.Id.ToString("B")}""");
+            writer.WriteLine($@"ID=""{this.Id.ToString("B").ToUpperInvariant()}""");
 
             foreach (var module in this.Modules)
             {
