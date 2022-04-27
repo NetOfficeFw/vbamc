@@ -23,7 +23,7 @@ namespace vbamc.Vba
         // Reserved constants
         public const short Reserved1 = 0x61CC;
         public const byte Reserved2 = 0x00;
-        public const byte Reserved3 = 0x0001;
+        public const short Reserved3 = 0x0001;
 
         public byte[] Generate()
         {
