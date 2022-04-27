@@ -37,8 +37,6 @@ void ProcessFile(CFStorage storage, string directory, CFItem item)
             try
             {
                 data = VbaCompression.Decompress(data);
-
-                var modules = DirStream.GetModules(data);
             }
             catch (Exception ex)
             {
