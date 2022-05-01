@@ -4,6 +4,9 @@ namespace vbamc.Vba
 {
     public class DirStream
     {
+        public const ushort TerminatorValue = 0x0010;
+        public const uint ReservedValue = 0;
+
         public byte[] GetData(ProjectRecord project)
         {
             var information = new InformationRecord();
@@ -17,10 +20,15 @@ namespace vbamc.Vba
             var memory = new MemoryStream(1024);
             var writer = new BinaryWriter(memory);
 
+            // Records
             information.WriteTo(writer);
             references.WriteTo(writer);
             modules.WriteTo(writer);
 
+            // Terminator
+            writer.Write(TerminatorValue);
+            writer.Write(ReservedValue);
+            
             writer.Close();
 
             return memory.ToArray();
