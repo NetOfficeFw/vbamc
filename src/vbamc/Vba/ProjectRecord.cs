@@ -12,7 +12,7 @@ namespace vbamc.Vba
             };
         }
 
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
@@ -42,7 +42,7 @@ namespace vbamc.Vba
             var memory = new MemoryStream();
             var writer = new BinaryWriter(memory);
             
-            writer.WriteLine($@"ID=""{this.Id.ToString("B").ToUpperInvariant()}""");
+            writer.WriteLine($@"ID=""{this.Id}""");
 
             foreach (var module in this.Modules)
             {

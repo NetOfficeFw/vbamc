@@ -30,16 +30,18 @@ namespace vbamc
             var moduleNames = this.modules.Select(m => m.Name).ToList();
 
             var storage = new CompoundFile();
+            var projectId = this.ProjectId.ToString("B").ToUpperInvariant();
 
             // PROJECT stream
             var projectStream = storage.RootStorage.AddStream(StreamId.Project);
             var project = new ProjectRecord();
-            project.Id = this.ProjectId;
+            project.Id = projectId;
             project.Name = this.ProjectName;
             project.Modules = this.modules;
 
-            // dummy values
-            project.ProtectionState = "5351A4A28AA68AA68AA68AA6";
+            var protectionState = new ProjectProtectionState(projectId);
+            
+            project.ProtectionState = protectionState.ToEncryptedString();
             project.ProjectPassword = "3D3FCADC5EC75FC75FC7";
             project.VisibilityState = "3634C1D243323D333D33C2";
 
