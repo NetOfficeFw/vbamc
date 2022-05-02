@@ -40,9 +40,10 @@ namespace vbamc
             project.Modules = this.modules;
 
             var protectionState = new ProjectProtectionState(projectId);
+            var projectPassword = new ProjectPassword(projectId);
             
             project.ProtectionState = protectionState.ToEncryptedString();
-            project.ProjectPassword = "3D3FCADC5EC75FC75FC7";
+            project.ProjectPassword = projectPassword.ToEncryptedString();
             project.VisibilityState = "3634C1D243323D333D33C2";
 
             var projectContent = project.Generate();
