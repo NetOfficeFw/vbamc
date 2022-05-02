@@ -52,5 +52,20 @@ namespace VbaCompiler.Tests
             // Assert
             Assert.AreEqual(expectedProtectionState, actualProtectionState);
         }
+
+        [Test]
+        [TestCase("{917DED54-440B-4FD1-A5C1-74ACF261E600}", "1517CAF1D6F9D7F9D706")]
+        public void ProjectVisibilityState_ToEncryptedString_Test(string projectId, string expectedProtectionState)
+        {
+            // Arrange
+            const byte seed = 0x15;
+            var state = new ProjectVisibilityState(projectId);
+
+            // Act
+            var actualProtectionState = state.ToEncryptedString(seed);
+
+            // Assert
+            Assert.AreEqual(expectedProtectionState, actualProtectionState);
+        }
     }
 }

@@ -41,10 +41,11 @@ namespace vbamc
 
             var protectionState = new ProjectProtectionState(projectId);
             var projectPassword = new ProjectPassword(projectId);
+            var visibilityState = new ProjectVisibilityState(projectId);
             
             project.ProtectionState = protectionState.ToEncryptedString();
             project.ProjectPassword = projectPassword.ToEncryptedString();
-            project.VisibilityState = "3634C1D243323D333D33C2";
+            project.VisibilityState = visibilityState.ToEncryptedString();
 
             var projectContent = project.Generate();
             projectStream.SetData(projectContent);
