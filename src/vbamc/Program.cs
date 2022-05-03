@@ -1,32 +1,95 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Text;
+using DocumentFormat.OpenXml.Packaging;
+using McMaster.Extensions.CommandLineUtils;
 using vbamc;
 
-Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-var targetPath = @"vbaProject.bin";
-var targetMacroPath = @"CustomMacro.pptm";
-
-var compiler = new VbaCompiler();
-
-compiler.ProjectId = Guid.NewGuid();
-compiler.ProjectName = "CustomProjectName";
-
-compiler.AddModule(@"d:\dev\github\NetOfficeFw\vbamc\sample\Module1.vb");
-compiler.AddClass(@"d:\dev\github\NetOfficeFw\vbamc\sample\Class1.vb");
-
-compiler.Compile(targetPath);
-
-var macroTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), @"data\MacroTemplate.potm");
-var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
-var mainDoc = macroTemplate.PresentationPart;
-if (mainDoc != null)
+[Command(Name = "vbamc", Description = "Visual Basic for Applications macro compiler")]
+public class Program
 {
-    var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
-    using var reader = File.OpenRead(targetPath);
-    vbaProject.FeedData(reader);
-    reader.Close();
-}
+    public static int Main(string[] args)
+        => CommandLineApplication.Execute<Program>(args);
 
-macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.MacroEnabledPresentation);
-macroTemplate.SaveAs(targetMacroPath);
+    [Required]
+    [Option("-m|--module")]
+    public IEnumerable<string> Modules { get; } = Enumerable.Empty<string>();
+
+    [Option("-c|--class")]
+    public IEnumerable<string> Classes { get; } = Enumerable.Empty<string>();
+
+    [Option("-n|--name", Description = "Project name")]
+    public string ProjectName { get; } = "VBAProject";
+
+    [Option("--company", Description = "Company name")]
+    public string? CompanyName { get; }
+
+    [Option("-o|--output", Description = "Target build output path")]
+    public string OutputPath { get; } = "bin";
+
+    [Option("--intermediate", Description = "Intermediate path for build output")]
+    public string IntermediatePath { get; } = "obj";
+
+    private void OnExecute()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        var wd = Directory.GetCurrentDirectory();
+        var outputPath = Path.Combine(wd, this.OutputPath);
+        var intermediatePath = Path.Combine(wd, this.IntermediatePath);
+
+        var outputProjectName = @"vbaProject.bin";
+        var outputMacroName = @"CustomMacro.pptm";
+
+        DirectoryEx.EnsureDirectory(outputPath);
+        var targetMacroPath = Path.Combine(outputPath, outputMacroName);
+
+        var compiler = new VbaCompiler();
+
+        compiler.ProjectId = Guid.NewGuid();
+        compiler.ProjectName = this.ProjectName;
+
+        // add modules
+        foreach (var module in this.Modules)
+        {
+            var path = module;
+            if (!Path.IsPathRooted(path))
+            {
+                path = Path.Combine(wd, path);
+            }
+
+            compiler.AddModule(path);
+        }
+        
+        // add classes
+        foreach (var @class in this.Classes)
+        {
+            var path = @class;
+            if (!Path.IsPathRooted(path))
+            {
+                path = Path.Combine(wd, path);
+            }
+
+            compiler.AddClass(path);
+        }
+
+        var projectPath = compiler.Compile(intermediatePath, outputProjectName);
+
+        var appLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        var macroTemplatePath = Path.Combine(appLocation, @"data\MacroTemplate.potm");
+        var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
+        var mainDoc = macroTemplate.PresentationPart;
+        if (mainDoc != null)
+        {
+            var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
+            using var reader = File.OpenRead(projectPath);
+            vbaProject.FeedData(reader);
+            reader.Close();
+        }
+
+        macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.MacroEnabledPresentation);
+        macroTemplate.SaveAs(targetMacroPath);
+    }
+}

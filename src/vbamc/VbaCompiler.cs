@@ -25,7 +25,7 @@ namespace vbamc
             this.modules.Add(@class);
         }
 
-        public void Compile(string targetPath)
+        public string Compile(string intermediatePath, string projectFilename)
         {
             var moduleNames = this.modules.Select(m => m.Name).ToList();
 
@@ -79,10 +79,15 @@ namespace vbamc
                 moduleStream.WriteTo(vbaStorage);
             }
 
-            // TODO: remove
-            File.WriteAllBytes("dir_debug.bin", dirContent);
+            DirectoryEx.EnsureDirectory(intermediatePath);
 
-            storage.Save(targetPath);
+            var dirDebugPath = Path.Combine(intermediatePath, "dir.bin");
+            File.WriteAllBytes(dirDebugPath, dirContent);
+
+            var projectOutputPath = Path.Combine(intermediatePath, projectFilename);
+            storage.Save(projectOutputPath);
+
+            return projectOutputPath;
         }
     }
 }
