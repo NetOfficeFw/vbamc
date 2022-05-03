@@ -89,6 +89,13 @@ public class Program
             reader.Close();
         }
 
+        macroTemplate.PackageProperties.Title = this.ProjectName;
+        var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+        if (propCompany != null && !String.IsNullOrEmpty(this.CompanyName))
+        {
+            propCompany.Text = this.CompanyName;
+        }
+
         macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.MacroEnabledPresentation);
         macroTemplate.SaveAs(targetMacroPath);
     }
