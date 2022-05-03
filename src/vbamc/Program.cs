@@ -7,7 +7,7 @@ var targetPath = @"vbaProject.bin";
 
 var compiler = new VbaCompiler();
 
-compiler.ProjectId = new Guid("{607B0672-60F3-4698-B08A-FA8F558E7F13}");
+compiler.ProjectId = Guid.NewGuid();
 compiler.ProjectName = "CustomProjectName";
 
 compiler.AddModule(@"d:\dev\github\NetOfficeFw\vbamc\sample\Module1.vb");
