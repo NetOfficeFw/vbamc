@@ -18,7 +18,7 @@ namespace vbamc
             var module = ModuleUnit.FromFile(path, ModuleUnitType.Module);
             this.modules.Add(module);
         }
-        
+
         public void AddClass(string path)
         {
             var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class);
@@ -42,7 +42,7 @@ namespace vbamc
             var protectionState = new ProjectProtectionState(projectId);
             var projectPassword = new ProjectPassword(projectId);
             var visibilityState = new ProjectVisibilityState(projectId);
-            
+
             project.ProtectionState = protectionState.ToEncryptedString();
             project.ProjectPassword = projectPassword.ToEncryptedString();
             project.VisibilityState = visibilityState.ToEncryptedString();

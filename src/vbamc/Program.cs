@@ -25,6 +25,9 @@ public class Program
     [Option("--company", Description = "Company name")]
     public string? CompanyName { get; }
 
+    [Option("-f|--file", Description = "Target add-in file name")]
+    public string FileName { get; } = "AddinPresentation.ppam";
+
     [Option("-o|--output", Description = "Target build output path")]
     public string OutputPath { get; } = "bin";
 
@@ -40,10 +43,10 @@ public class Program
         var intermediatePath = Path.Combine(wd, this.IntermediatePath);
 
         var outputProjectName = @"vbaProject.bin";
-        var outputMacroName = @"CustomMacro.pptm";
+        var outputFileName = this.FileName;
 
         DirectoryEx.EnsureDirectory(outputPath);
-        var targetMacroPath = Path.Combine(outputPath, outputMacroName);
+        var targetMacroPath = Path.Combine(outputPath, outputFileName);
 
         var compiler = new VbaCompiler();
 
@@ -61,7 +64,7 @@ public class Program
 
             compiler.AddModule(path);
         }
-        
+
         // add classes
         foreach (var @class in this.Classes)
         {
@@ -96,7 +99,7 @@ public class Program
             propCompany.Text = this.CompanyName;
         }
 
-        macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.MacroEnabledPresentation);
+        macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.AddIn);
         macroTemplate.SaveAs(targetMacroPath);
     }
 }
