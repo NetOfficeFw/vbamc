@@ -18,14 +18,14 @@ namespace vbamc
             var module = ModuleUnit.FromFile(path, ModuleUnitType.Module);
             this.modules.Add(module);
         }
-        
+
         public void AddClass(string path)
         {
             var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class);
             this.modules.Add(@class);
         }
 
-        public void Compile(string targetPath)
+        public string Compile(string intermediatePath, string projectFilename)
         {
             var moduleNames = this.modules.Select(m => m.Name).ToList();
 
@@ -42,7 +42,7 @@ namespace vbamc
             var protectionState = new ProjectProtectionState(projectId);
             var projectPassword = new ProjectPassword(projectId);
             var visibilityState = new ProjectVisibilityState(projectId);
-            
+
             project.ProtectionState = protectionState.ToEncryptedString();
             project.ProjectPassword = projectPassword.ToEncryptedString();
             project.VisibilityState = visibilityState.ToEncryptedString();
@@ -79,10 +79,15 @@ namespace vbamc
                 moduleStream.WriteTo(vbaStorage);
             }
 
-            // TODO: remove
-            File.WriteAllBytes("dir_debug.bin", dirContent);
+            DirectoryEx.EnsureDirectory(intermediatePath);
 
-            storage.Save(targetPath);
+            var dirDebugPath = Path.Combine(intermediatePath, "dir.bin");
+            File.WriteAllBytes(dirDebugPath, dirContent);
+
+            var projectOutputPath = Path.Combine(intermediatePath, projectFilename);
+            storage.Save(projectOutputPath);
+
+            return projectOutputPath;
         }
     }
 }
