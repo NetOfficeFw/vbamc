@@ -1,4 +1,7 @@
-﻿using System.Security.Cryptography;
+﻿// Copyright 2022 Cisco Systems, Inc.
+// Licensed under MIT-style license (see LICENSE.txt file).
+
+using System.Security.Cryptography;
 
 namespace VbaCompiler.Tests
 {
