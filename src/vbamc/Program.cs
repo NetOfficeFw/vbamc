@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Text;
+using DocumentFormat.OpenXml.Office2010.CustomUI;
 using DocumentFormat.OpenXml.Packaging;
 using McMaster.Extensions.CommandLineUtils;
 using vbamc;
@@ -92,6 +93,8 @@ public class Program
             reader.Close();
         }
 
+        AttachRibbonCustomization(macroTemplate, Directory.GetCurrentDirectory());
+
         macroTemplate.PackageProperties.Title = this.ProjectName;
         var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
         if (propCompany != null && !String.IsNullOrEmpty(this.CompanyName))
@@ -101,5 +104,36 @@ public class Program
 
         macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.AddIn);
         macroTemplate.SaveAs(targetMacroPath);
+    }
+
+    private void AttachRibbonCustomization(PresentationDocument document, string sourcePath)
+    {
+        var customUiDir = Path.Combine(sourcePath, "customUI");
+        var ribbonPath = Path.Combine(customUiDir, "customUI14.xml");
+        if (!File.Exists(ribbonPath))
+        {
+            return;
+        }
+
+        var ribbonContent = File.ReadAllText(ribbonPath);
+
+        var ribbonPart = document.RibbonAndBackstageCustomizationsPart;
+        if (ribbonPart == null)
+        {
+            ribbonPart = document.AddRibbonAndBackstageCustomizationsPart();
+        }
+
+        ribbonPart.CustomUI = new CustomUI(ribbonContent);
+        ribbonPart.CustomUI.Save();
+        Console.WriteLine($"Added ribbon customization from file '{ribbonPath}'");
+
+        var images = Directory.EnumerateFiles(Path.Combine(customUiDir, "images"), "*.png");
+        foreach(var imagePath in images)
+        {
+            var imageFilename = Path.GetFileNameWithoutExtension(imagePath);
+            var imagePart = ribbonPart.AddImagePart(ImagePartType.Png, imageFilename);
+            using var imageStream = new FileStream(imagePath, FileMode.Open);
+            imagePart.FeedData(imageStream);
+        }
     }
 }
