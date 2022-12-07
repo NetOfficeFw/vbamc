@@ -31,7 +31,7 @@ namespace vbamc.Vba
             var content = File.ReadAllText(path);
             var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-            content.Replace("~/", userProfilePath + Path.DirectorySeparatorChar);
+            content = content.Replace("~/", userProfilePath + Path.DirectorySeparatorChar);
 
             var module = new ModuleUnit
             {
