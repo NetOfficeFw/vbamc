@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RuntimeIdentifier>osx.10.15-x64</RuntimeIdentifier>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
