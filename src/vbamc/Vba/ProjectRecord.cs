@@ -13,28 +13,29 @@ namespace vbamc.Vba
             {
                 Constants.HostExtender_VBE
             };
+            this.Modules = new List<ModuleUnit>();
         }
 
-        public string Id { get; set; }
+        public string Id { get; set; } = "";
 
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         public string VersionCompatible32 => Constants.VersionCompatible32;
 
         /// <summary>
         /// CMG value.
         /// </summary>
-        public string ProtectionState { get; set; }
+        public string ProtectionState { get; set; } = "";
         
         /// <summary>
         /// DPB value.
         /// </summary>
-        public string ProjectPassword { get; set; }
+        public string ProjectPassword { get; set; } = "";
         
         /// <summary>
         /// GC value.
         /// </summary>
-        public string VisibilityState { get; set; }
+        public string VisibilityState { get; set; } = "";
 
         public IList<string> HostExtenders { get; }
 

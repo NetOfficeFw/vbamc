@@ -14,7 +14,7 @@ namespace vbamc
 
         public Guid ProjectId { get; set; }
 
-        public string ProjectName { get; set; }
+        public string ProjectName { get; set; } = "Project";
 
         public void AddModule(string path)
         {

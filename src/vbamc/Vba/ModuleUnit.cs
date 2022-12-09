@@ -19,11 +19,14 @@ namespace vbamc.Vba
             "Attribute VB_Customizable = False\r\n" +
             "\r\n";
 
-        public string Name { get; set; }
+        private ModuleUnit()
+        {}
 
-        public ModuleUnitType Type { get; set; }
+        public string Name { get; init; } = default!;
 
-        public string Content { get; set; }
+        public ModuleUnitType Type { get; init; } = default!;
+
+        public string Content { get; init; } = default!;
 
         public static ModuleUnit FromFile(string path, ModuleUnitType type)
         {

@@ -10,9 +10,9 @@ namespace vbamc.Vba
         public const short ReferenceNameId = 0x0016;
         public const short ReferenceNameReserved = 0x003E;
 
-        public string ReferenceName { get; set; }
+        public string ReferenceName { get; set; } = "";
         
-        public string Libid { get; set; }
+        public string Libid { get; set; } = "";
 
         public void WriteTo(BinaryWriter writer)
         {

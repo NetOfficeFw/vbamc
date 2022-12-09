@@ -27,9 +27,9 @@ namespace vbamc.Vba
 
         public SysKind SysKind { get; set; }
 
-        public string ProjectName { get; set; }
+        public string? ProjectName { get; set; }
         
-        public string ProjectDescription { get; set; }
+        public string? ProjectDescription { get; set; }
 
         public int CompatVersion => 2;
 
