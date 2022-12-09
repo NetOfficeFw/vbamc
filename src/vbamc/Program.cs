@@ -83,9 +83,7 @@ public class Program
 
         var projectPath = compiler.Compile(intermediatePath, outputProjectName);
 
-        var appLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        var macroTemplatePath = Path.Combine(appLocation, @"data/MacroTemplate.potm");
+        var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.potm");
         var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
         var mainDoc = macroTemplate.PresentationPart;
         if (mainDoc != null)
