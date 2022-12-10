@@ -1,0 +1,34 @@
+name: build
+
+on:
+  push:
+    branches: [ "main", "build" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: 0
+  ContinuousIntegrationBuild: true
+  RestoreLockedMode: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7
+    - name: restore
+      run: dotnet restore
+    - name: build
+      run: dotnet build --no-restore
