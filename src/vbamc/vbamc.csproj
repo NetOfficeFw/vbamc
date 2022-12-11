@@ -15,6 +15,7 @@
     <Copyright>Copyright © 2022 Jozef Izso, © 2022 Cisco Systems, Inc. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/NetOfficeFw/vbamc</PackageProjectUrl>
+    <Description>Compiler vbamc compiles Visual Basic source code and Ribbon customizations to a macro enabled add-in file for Microsoft Office applications.</Description>
   </PropertyGroup>
 
   <!-- Source Link support -->
