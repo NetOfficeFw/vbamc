@@ -16,6 +16,8 @@ env:
   ContinuousIntegrationBuild: true
   RestoreLockedMode: true
   Configuration: Release
+  RepositoryBranch: '${{ github.ref_name }}'
+  RepositoryCommit: '${{ github.sha }}'
 
 jobs:
   build:
