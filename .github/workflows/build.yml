@@ -13,7 +13,6 @@ env:
   DOTNET_NOLOGO: 1
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_GENERATE_ASPNET_CERTIFICATE: 0
-  ContinuousIntegrationBuild: true
   RestoreLockedMode: true
   Configuration: Release
   RepositoryBranch: '${{ github.ref_name }}'
