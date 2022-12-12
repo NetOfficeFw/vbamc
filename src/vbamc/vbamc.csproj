@@ -9,6 +9,14 @@
     <Version>1.2.0</Version>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Company>NetOfficeFw</Company>
+    <Authors>Jozef Izso</Authors>
+    <Copyright>Copyright © 2022 Jozef Izso, © 2022 Cisco Systems, Inc. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/NetOfficeFw/vbamc</PackageProjectUrl>
+  </PropertyGroup>
+
   <!-- Source Link support -->
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
