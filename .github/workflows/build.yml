@@ -70,6 +70,12 @@ jobs:
           bin/Release/net6.0/vbamc.dll `
           bin/Release/net7.0/vbamc.dll
 
+    - name: publish artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: vbamc_bin
+        path: '${{ github.workspace }}/src/vbamc/bin'
+
     - name: pack
       if: ${{ always() }}
       run: dotnet pack --no-build --no-restore -o dist
