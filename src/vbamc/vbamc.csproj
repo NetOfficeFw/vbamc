@@ -9,10 +9,33 @@
     <Version>1.2.0</Version>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Company>NetOfficeFw</Company>
+    <Authors>Jozef Izso</Authors>
+    <Copyright>Copyright © 2022 Jozef Izso, © 2022 Cisco Systems, Inc. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/NetOfficeFw/vbamc</PackageProjectUrl>
+    <Description>Compiler vbamc compiles Visual Basic source code and Ribbon customizations to a macro enabled add-in file for Microsoft Office applications.</Description>
+    <PackageTags>tool;compiler;VBA;macro;addin;office</PackageTags>
+  </PropertyGroup>
+
+  <!-- Source Link support -->
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <ContinuousIntegrationBuild Condition=" '$(GITHUB_ACTIONS)' == 'true' ">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.16.0" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
-    <PackageReference Include="OpenMcdf" Version="2.2.1.9" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="OpenMcdf" Version="2.2.1.12" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
   </ItemGroup>
 
