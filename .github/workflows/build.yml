@@ -74,6 +74,20 @@ jobs:
       if: ${{ always() }}
       run: dotnet pack --no-build --no-restore -o dist
 
+    - name: sign vbamc package
+      if: ${{ success() && github.event_name == 'push' }}
+      working-directory: '${{ github.workspace}}/dist'
+      run: |
+          NuGetKeyVaultSignTool.exe sign vbamc*.nupkg `
+          --file-digest sha256 `
+          --timestamp-rfc3161 http://timestamp.digicert.com `
+          --timestamp-digest sha256 `
+          --azure-key-vault-url "${{ secrets.KEYVAULT_URL }}" `
+          --azure-key-vault-tenant-id "${{ secrets.KEYVAULT_TENANT_ID }}" `
+          --azure-key-vault-client-id "${{ secrets.KEYVAULT_CLIENT_ID }}" `
+          --azure-key-vault-client-secret "${{ secrets.AZURESIGNTOOL_CLIENT_SECRET }}" `
+          --azure-key-vault-certificate "CS-HSMv2"
+
     - name: publish artifact
       uses: actions/upload-artifact@v3
       with:
