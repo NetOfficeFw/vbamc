@@ -17,6 +17,8 @@
     <PackageProjectUrl>https://github.com/NetOfficeFw/vbamc</PackageProjectUrl>
     <Description>Compiler vbamc compiles Visual Basic source code and Ribbon customizations to a macro enabled add-in file for Microsoft Office applications.</Description>
     <PackageTags>tool;compiler;VBA;macro;addin;office</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
 
   <!-- Source Link support -->
@@ -47,6 +49,8 @@
     <None Update="data\MacroTemplate.potm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="Icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
