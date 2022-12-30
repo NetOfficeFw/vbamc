@@ -23,14 +23,17 @@ public class Program
     [Option("-c|--class")]
     public IEnumerable<string> Classes { get; } = Enumerable.Empty<string>();
 
+    [Option("-t|--type", Description = "Project name")]
+    public IEnumerable<string> TargetTypes { get; } = new [] { "Excel", "PowerPoint" };
+
     [Option("-n|--name", Description = "Project name")]
     public string ProjectName { get; } = "VBAProject";
 
     [Option("--company", Description = "Company name")]
-    public string? CompanyName { get; }
+    public string? CompanyName { get; } = null!;
 
-    [Option("-f|--file", Description = "Target add-in file name")]
-    public string FileName { get; } = "AddinPresentation.ppam";
+    [Option("-f|--file", Description = "Target add-in file name without extension")]
+    public string FileName { get; } = "Addin";
 
     [Option("-o|--output", Description = "Target build output path")]
     public string OutputPath { get; } = "bin";
@@ -47,10 +50,8 @@ public class Program
         var intermediatePath = Path.Combine(wd, this.IntermediatePath);
 
         var outputProjectName = @"vbaProject.bin";
-        var outputFileName = this.FileName;
 
         DirectoryEx.EnsureDirectory(outputPath);
-        var targetMacroPath = Path.Combine(outputPath, outputFileName);
 
         var compiler = new VbaCompiler();
 
@@ -83,18 +84,39 @@ public class Program
 
         var projectPath = compiler.Compile(intermediatePath, outputProjectName);
 
+        foreach (var targetType in this.TargetTypes)
+        {
+            switch (targetType)
+            {
+                case "PowerPoint":
+                    GeneratePowerPointAddinFile(outputPath, projectPath);
+                    break;
+                case "Excel":
+                    GenerateExcelAddinFile(outputPath, projectPath);
+                    break;
+            }
+        }
+    }
+
+    private string GeneratePowerPointAddinFile(string outputPath, string vbaProjectFilePath)
+    {
+        var outputFileName = Path.ChangeExtension(this.FileName, ".ppam");
+        var targetMacroPath = Path.Combine(outputPath, outputFileName);
+
         var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.potm");
         var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
         var mainDoc = macroTemplate.PresentationPart;
         if (mainDoc != null)
         {
             var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
-            using var reader = File.OpenRead(projectPath);
+            using var reader = File.OpenRead(vbaProjectFilePath);
             vbaProject.FeedData(reader);
             reader.Close();
         }
 
-        AttachRibbonCustomization(macroTemplate, Directory.GetCurrentDirectory());
+        var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
+
+        AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
 
         macroTemplate.PackageProperties.Title = this.ProjectName;
         var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
@@ -105,9 +127,48 @@ public class Program
 
         macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.AddIn);
         macroTemplate.SaveAs(targetMacroPath);
+
+        Console.WriteLine($"Generated {outputFileName} add-in file.");
+
+        return targetMacroPath;
     }
 
-    private void AttachRibbonCustomization(PresentationDocument document, string sourcePath)
+    private string GenerateExcelAddinFile(string outputPath, string vbaProjectFilePath)
+    {
+        var outputFileName = Path.ChangeExtension(this.FileName, ".xlam");
+        var targetMacroPath = Path.Combine(outputPath, outputFileName);
+
+        var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.xltm");
+        var macroTemplate = SpreadsheetDocument.CreateFromTemplate(macroTemplatePath);
+        TypedOpenXmlPart? mainDoc = macroTemplate.WorkbookPart;
+        if (mainDoc != null)
+        {
+            var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
+            using var reader = File.OpenRead(vbaProjectFilePath);
+            vbaProject.FeedData(reader);
+            reader.Close();
+        }
+
+        var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
+        AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
+
+        macroTemplate.PackageProperties.Title = this.ProjectName;
+        var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+        if (propCompany != null && !String.IsNullOrEmpty(this.CompanyName))
+        {
+            propCompany.Text = this.CompanyName;
+        }
+
+        macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.SpreadsheetDocumentType.AddIn);
+        macroTemplate.SaveAs(targetMacroPath);
+
+        Console.WriteLine($"Generated {outputFileName} add-in file.");
+
+        return targetMacroPath;
+    }
+
+
+    private void AttachRibbonCustomization(RibbonAndBackstageCustomizationsPart ribbonPart, string sourcePath)
     {
         var customUiDir = Path.Combine(sourcePath, "customUI");
         var ribbonPath = Path.Combine(customUiDir, "customUI14.xml");
@@ -118,15 +179,8 @@ public class Program
 
         var ribbonContent = File.ReadAllText(ribbonPath);
 
-        var ribbonPart = document.RibbonAndBackstageCustomizationsPart;
-        if (ribbonPart == null)
-        {
-            ribbonPart = document.AddRibbonAndBackstageCustomizationsPart();
-        }
-
         ribbonPart.CustomUI = new CustomUI(ribbonContent);
         ribbonPart.CustomUI.Save();
-        Console.WriteLine($"Added ribbon customization from file '{ribbonPath}'");
 
         var images = Directory.EnumerateFiles(Path.Combine(customUiDir, "images"), "*.png");
         foreach(var imagePath in images)
