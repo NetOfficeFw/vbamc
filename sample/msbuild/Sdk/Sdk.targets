@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  © 2022 Cisco Systems, Inc. All rights reserved.
+  Licensed under the MIT license.
+-->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="VbaCompiler.VbaCompilerTask" AssemblyFile="lib/VbaCompilerTask.dll"/>
+
+
+  <Target Name="Build">
+    <!-- <Exec Command="vbamc.exe @(Modules->'- -module %22%(Identity)%22', ' ') @(Classes->'- -class %22%(Identity)%22', ' ') - -file %22$(OutputName)$(OutputExt)%22 - -name $(OutputName) - -company $(Company)" /> -->
+
+    <VbaCompilerTask
+      Modules="@(Modules)"
+      Classes="@(Classes)"
+      OutputName="$(OutputName)$(OutputExt)"
+      ProjectName="$(OutputName)"
+      CompanyName="$(Company)"
+      >
+      <Output TaskParameter="OutputMacroFile" PropertyName="OutputMacroFile" />
+    </VbaCompilerTask>
+
+    <Message Text="  $(OutputName)$(OutputExt) -> $(OutputMacroFile)" Importance="High" />
+  </Target>
+
+  <Target Name="Clean">
+    <Message Text="Will delete bin/$(OutputName)$(OutputExt)" />
+
+    <Delete Files="bin/$(OutputName)$(OutputExt)" />
+    <RemoveDir Directories="bin" />
+    <RemoveDir Directories="obj" />
+  </Target>
+
+</Project>

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  © 2022 Cisco Systems, Inc. All rights reserved.
+  Licensed under the MIT license.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputName Condition=" '$(OutputName)' == ''">Addin</OutputName>
+    <OutputExt>.ppam</OutputExt>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Modules Include="**\Module*.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Classes Include="**\Class*.vb" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,7 @@
+<Project Sdk="d:\dev\github\NetOfficeFw\NetOfficeBuildSdk">
+<!-- <Project Sdk="NetOffice.Sdk.Addin"> -->
+  <PropertyGroup>
+    <OutputName>SampleAddin1</OutputName>
+    <Company>ACME</Company>
+  </PropertyGroup>
+</Project>

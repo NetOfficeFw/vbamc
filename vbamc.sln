@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vbamc", "src\vbamc\vbamc.cs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C879AB47-586B-4229-8D7C-440063943FCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VbaCompiler.Tests", "tests\VbaCompiler.Tests\VbaCompiler.Tests.csproj", "{96CB89F7-B342-499A-8B11-0544E8CE084B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VbaCompiler.Tests", "tests\VbaCompiler.Tests\VbaCompiler.Tests.csproj", "{96CB89F7-B342-499A-8B11-0544E8CE084B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VbaCompilerTask", "utils\VbaCompilerTask\VbaCompilerTask.csproj", "{57A5F967-830E-4C97-913C-A87A10A5428C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{96CB89F7-B342-499A-8B11-0544E8CE084B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96CB89F7-B342-499A-8B11-0544E8CE084B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96CB89F7-B342-499A-8B11-0544E8CE084B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57A5F967-830E-4C97-913C-A87A10A5428C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57A5F967-830E-4C97-913C-A87A10A5428C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57A5F967-830E-4C97-913C-A87A10A5428C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57A5F967-830E-4C97-913C-A87A10A5428C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +53,7 @@ Global
 		{9DF9B097-B6AD-4804-B77B-368BA556C8B5} = {A71B7204-5177-40D4-85E9-9191D9D0E871}
 		{A18B0C04-A7DF-4E2C-A1EF-F5A8F3B3E8EF} = {A65297C5-32F8-43EF-9443-887A10A11E26}
 		{96CB89F7-B342-499A-8B11-0544E8CE084B} = {C879AB47-586B-4229-8D7C-440063943FCA}
+		{57A5F967-830E-4C97-913C-A87A10A5428C} = {A71B7204-5177-40D4-85E9-9191D9D0E871}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8451A57F-A750-4C84-BFDE-48D3CD3D5F33}
