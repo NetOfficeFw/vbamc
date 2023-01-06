@@ -3,21 +3,12 @@
     <tabs>
       <!-- extend the Home tab -->
       <tab idMso="TabHome">
-        <group id="HelloWorldGroup" label="Hello World" insertAfterMso="GroupSlides">
-          <button id="btnHome"
-                  label="Home"
-                  size="large"
-                  image="icons8-home-96"
-                  />
-          <button id="btnContacts"
-                  label="Contacts"
-                  size="large"
-                  image="icons8-contacts-96"
-                  />
+        <group id="HelloWorldGroup" label="Hello World" insertAfterMso="GroupClipboard">
           <button id="btnAbout"
                   label="About"
                   size="large"
                   image="icons8-about-96"
+                  onAction="OnActionAbout"
                   />
         </group>
       </tab>
