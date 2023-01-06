@@ -47,7 +47,6 @@ public class Program
         var outputProjectName = @"vbaProject.bin";
         var outputFileName = this.FileName;
 
-
         var compiler = new VbaCompiler();
 
         compiler.ProjectId = Guid.NewGuid();
@@ -80,7 +79,12 @@ public class Program
 
         var vbaProjectPath = compiler.CompileVbaProject(intermediatePath, outputProjectName);
 
-        compiler.CompileMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
-        compiler.CompileMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.AddIn);
+        compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
+        compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.AddIn);
+
+        compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
+        compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.AddIn);
+
+        compiler.CompileWordMacroFile(outputPath, this.FileName, vbaProjectPath, WordprocessingDocumentType.MacroEnabledDocument);
     }
 }

@@ -98,7 +98,7 @@ namespace vbamc
             return projectOutputPath;
         }
 
-        public void CompileMacroFile(string outputPath, string baseFilename, string vbaProjectPath, PresentationDocumentType documentType)
+        public void CompilePowerPointMacroFile(string outputPath, string baseFilename, string vbaProjectPath, PresentationDocumentType documentType)
         {
             DirectoryEx.EnsureDirectory(outputPath);
             var suffix = documentType == PresentationDocumentType.AddIn ? "Addin.ppam" : "Macro.pptm";
@@ -115,7 +115,8 @@ namespace vbamc
                 reader.Close();
             }
 
-            AttachRibbonCustomization(macroTemplate, Directory.GetCurrentDirectory());
+            var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
+            AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
@@ -129,7 +130,76 @@ namespace vbamc
             macroTemplate.SaveAs(targetMacroPath);
         }
 
-        private void AttachRibbonCustomization(PresentationDocument document, string sourcePath)
+        public void CompileExcelMacroFile(string outputPath, string baseFilename, string vbaProjectPath, SpreadsheetDocumentType documentType)
+        {
+            DirectoryEx.EnsureDirectory(outputPath);
+            var suffix = documentType == SpreadsheetDocumentType.AddIn ? "Addin.xlam" : "Macro.xlsm";
+            string outputFileName = baseFilename + suffix;
+
+            var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.xltx");
+            var macroTemplate = SpreadsheetDocument.CreateFromTemplate(macroTemplatePath);
+            var mainDoc = macroTemplate.WorkbookPart;
+            if (mainDoc != null)
+            {
+                var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
+                using var reader = File.OpenRead(vbaProjectPath);
+                vbaProject.FeedData(reader);
+                reader.Close();
+            }
+
+            var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
+            AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
+
+            macroTemplate.PackageProperties.Title = this.ProjectName;
+            var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+            if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
+            {
+                propCompany.Text = this.CompanyName;
+            }
+
+            macroTemplate.ChangeDocumentType(documentType);
+            var targetMacroPath = Path.Combine(outputPath, outputFileName);
+            macroTemplate.SaveAs(targetMacroPath);
+        }
+
+        public void CompileWordMacroFile(string outputPath, string baseFilename, string vbaProjectPath, WordprocessingDocumentType documentType)
+        {
+            if (documentType != WordprocessingDocumentType.MacroEnabledDocument)
+            {
+                throw new ArgumentOutOfRangeException(nameof(documentType), "Compiler supports only WordprocessingDocumentType.MacroEnabledDocument value.");
+            }
+
+            DirectoryEx.EnsureDirectory(outputPath);
+            var suffix = "Macro.docm";
+            string outputFileName = baseFilename + suffix;
+
+            var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.dotx");
+            var macroTemplate = WordprocessingDocument.CreateFromTemplate(macroTemplatePath);
+            var mainDoc = macroTemplate.MainDocumentPart;
+            if (mainDoc != null)
+            {
+                var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
+                using var reader = File.OpenRead(vbaProjectPath);
+                vbaProject.FeedData(reader);
+                reader.Close();
+            }
+
+            var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
+            AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
+
+            macroTemplate.PackageProperties.Title = this.ProjectName;
+            var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+            if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
+            {
+                propCompany.Text = this.CompanyName;
+            }
+
+            macroTemplate.ChangeDocumentType(documentType);
+            var targetMacroPath = Path.Combine(outputPath, outputFileName);
+            macroTemplate.SaveAs(targetMacroPath);
+        }
+
+        private void AttachRibbonCustomization(RibbonAndBackstageCustomizationsPart ribbonPart, string sourcePath)
         {
             var customUiDir = Path.Combine(sourcePath, "customUI");
             var ribbonPath = Path.Combine(customUiDir, "customUI14.xml");
@@ -139,13 +209,6 @@ namespace vbamc
             }
 
             var ribbonContent = File.ReadAllText(ribbonPath);
-
-            var ribbonPart = document.RibbonAndBackstageCustomizationsPart;
-            if (ribbonPart == null)
-            {
-                ribbonPart = document.AddRibbonAndBackstageCustomizationsPart();
-            }
-
             ribbonPart.CustomUI = new CustomUI(ribbonContent);
             ribbonPart.CustomUI.Save();
             Console.WriteLine($"Added ribbon customization from file '{ribbonPath}'");

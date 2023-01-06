@@ -1,7 +1,7 @@
 ' Module source code
-Private Declare PtrSafe Function auto_open Lib "~/dev/custom_code.dll" (ByVal app As LongPtr) As Long
+Declare PtrSafe Function GetCurrentProcessId Lib "kernel32" () As Long
 
 Public Sub Auto_Open()
-    ' execute code when PowerPoint starts
-    auto_open ObjPtr(Application)
+    ' execute code when application starts
+    MsgBox "Hello world from " & Application.Name & ", PID " & CStr(GetCurrentProcessId)
 End Sub
