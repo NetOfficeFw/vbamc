@@ -3,10 +3,8 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using System.Text;
-using DocumentFormat.OpenXml.Office2010.CustomUI;
-using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml;
 using McMaster.Extensions.CommandLineUtils;
 using vbamc;
 
@@ -30,7 +28,7 @@ public class Program
     public string? CompanyName { get; }
 
     [Option("-f|--file", Description = "Target add-in file name")]
-    public string FileName { get; } = "AddinPresentation.ppam";
+    public string FileName { get; } = "Presentation";
 
     [Option("-o|--output", Description = "Target build output path")]
     public string OutputPath { get; } = "bin";
@@ -49,13 +47,12 @@ public class Program
         var outputProjectName = @"vbaProject.bin";
         var outputFileName = this.FileName;
 
-        DirectoryEx.EnsureDirectory(outputPath);
-        var targetMacroPath = Path.Combine(outputPath, outputFileName);
 
         var compiler = new VbaCompiler();
 
         compiler.ProjectId = Guid.NewGuid();
         compiler.ProjectName = this.ProjectName;
+        compiler.CompanyName = this.CompanyName;
 
         // add modules
         foreach (var module in this.Modules)
@@ -81,60 +78,9 @@ public class Program
             compiler.AddClass(path);
         }
 
-        var projectPath = compiler.Compile(intermediatePath, outputProjectName);
+        var vbaProjectPath = compiler.CompileVbaProject(intermediatePath, outputProjectName);
 
-        var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.potm");
-        var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
-        var mainDoc = macroTemplate.PresentationPart;
-        if (mainDoc != null)
-        {
-            var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
-            using var reader = File.OpenRead(projectPath);
-            vbaProject.FeedData(reader);
-            reader.Close();
-        }
-
-        AttachRibbonCustomization(macroTemplate, Directory.GetCurrentDirectory());
-
-        macroTemplate.PackageProperties.Title = this.ProjectName;
-        var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
-        if (propCompany != null && !String.IsNullOrEmpty(this.CompanyName))
-        {
-            propCompany.Text = this.CompanyName;
-        }
-
-        macroTemplate.ChangeDocumentType(DocumentFormat.OpenXml.PresentationDocumentType.AddIn);
-        macroTemplate.SaveAs(targetMacroPath);
-    }
-
-    private void AttachRibbonCustomization(PresentationDocument document, string sourcePath)
-    {
-        var customUiDir = Path.Combine(sourcePath, "customUI");
-        var ribbonPath = Path.Combine(customUiDir, "customUI14.xml");
-        if (!File.Exists(ribbonPath))
-        {
-            return;
-        }
-
-        var ribbonContent = File.ReadAllText(ribbonPath);
-
-        var ribbonPart = document.RibbonAndBackstageCustomizationsPart;
-        if (ribbonPart == null)
-        {
-            ribbonPart = document.AddRibbonAndBackstageCustomizationsPart();
-        }
-
-        ribbonPart.CustomUI = new CustomUI(ribbonContent);
-        ribbonPart.CustomUI.Save();
-        Console.WriteLine($"Added ribbon customization from file '{ribbonPath}'");
-
-        var images = Directory.EnumerateFiles(Path.Combine(customUiDir, "images"), "*.png");
-        foreach(var imagePath in images)
-        {
-            var imageFilename = Path.GetFileNameWithoutExtension(imagePath);
-            var imagePart = ribbonPart.AddImagePart(ImagePartType.Png, imageFilename);
-            using var imageStream = new FileStream(imagePath, FileMode.Open);
-            imagePart.FeedData(imageStream);
-        }
+        compiler.CompileMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
+        compiler.CompileMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.AddIn);
     }
 }
