@@ -28,7 +28,7 @@ namespace vbad
         public const short ReferenceProjectId = 0x000E;
         public const short ReferenceNameReserved = 0x003E;
         public const short ReferenceRegisteredId = 0x000D;
-        
+
         public const short ModuleId = 0x000F;
         public const short ModuleCookieId = 0x0013;
         public const short ModuleNameId = 0x0019;
@@ -42,7 +42,12 @@ namespace vbad
 
             // Information record
             reader.ReadRecord(SysKindId);
-            reader.ReadRecord(CompatVersionId);
+            var p = reader.PeekChar();
+            if (p == CompatVersionId)
+            {
+                reader.ReadRecord(CompatVersionId);
+            }
+
             reader.ReadRecord(LcidId);
             reader.ReadRecord(LcidInvokeId);
             reader.ReadRecord(CodePageId);
@@ -77,7 +82,7 @@ namespace vbad
             uint size = reader.ReadUInt32();
             reader.ReadBytes((int)size);
         }
-        
+
         public static void ReadProjectVersionRecord(this BinaryReader reader, short id)
         {
             var idValue = reader.ReadInt16();

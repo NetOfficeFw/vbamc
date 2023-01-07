@@ -17,7 +17,7 @@ namespace vbamc.Vba
         {
             using var memory = new MemoryStream();
             using var writer = new BinaryWriter(memory);
-            
+
             foreach (var module in this.Modules)
             {
                 var sName = VbaEncodings.Default.GetBytes(module);

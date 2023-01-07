@@ -26,12 +26,12 @@ namespace vbamc.Vba
         /// CMG value.
         /// </summary>
         public string ProtectionState { get; set; } = "";
-        
+
         /// <summary>
         /// DPB value.
         /// </summary>
         public string ProjectPassword { get; set; } = "";
-        
+
         /// <summary>
         /// GC value.
         /// </summary>
@@ -45,12 +45,12 @@ namespace vbamc.Vba
         {
             var memory = new MemoryStream();
             var writer = new BinaryWriter(memory);
-            
+
             writer.WriteLine($@"ID=""{this.Id}""");
 
-            foreach (var module in this.Modules)
+            foreach (var module in this.Modules.OrderBy(unit => unit.Type))
             {
-                writer.WriteLine($"{module.Type}={module.Name}");
+                writer.WriteLine($"{module.Type}={module.NameForProject}");
             }
 
             writer.WriteLine($@"Name=""{this.Name}""");

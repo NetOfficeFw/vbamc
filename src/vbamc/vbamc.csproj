@@ -46,11 +46,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="data\MacroTemplate.dotx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="data\MacroTemplate.potm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="README.md" Pack="true" PackagePath="\"/>
-    <None Include="Icon.png" Pack="true" PackagePath="\"/>
+    <None Update="data\MacroTemplate.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
