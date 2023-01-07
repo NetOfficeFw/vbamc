@@ -5,7 +5,8 @@ namespace vbamc.Vba
 {
     public enum ModuleUnitType
     {
+        Document,
         Module,
-        Class
+        Class,
     }
 }

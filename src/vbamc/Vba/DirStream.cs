@@ -31,7 +31,7 @@ namespace vbamc.Vba
             // Terminator
             writer.Write(TerminatorValue);
             writer.Write(ReservedValue);
-            
+
             writer.Close();
 
             return memory.ToArray();

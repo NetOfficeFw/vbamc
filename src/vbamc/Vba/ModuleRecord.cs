@@ -18,6 +18,7 @@ namespace vbamc.Vba
         public const short CookieId = 0x002C;
         public const short TypeModuleId = 0x0021;
         public const short TypeClassId = 0x0022;
+        public const short TypeDocumentId = 0x0022;
         public const short ReadOnlyId = 0x0025;
         public const short PrivateId = 0x0028;
 
@@ -42,7 +43,7 @@ namespace vbamc.Vba
         public ModuleUnit Module { get; }
 
         public string DocString => "";
-        
+
         public int HelpContext => 0;
 
         public void WriteTo(BinaryWriter writer)
@@ -116,17 +117,24 @@ namespace vbamc.Vba
             writer.Write(ReservedValue);
         }
 
+        /// <summary>
+        /// Section 2.3.4.2.3.2.8 MODULETYPE Record
+        ///
+        /// MUST be 0x0021 when the containing MODULE Record (section 2.3.4.2.3.2) is a procedural module.
+        /// MUST be 0x0022 when the containing MODULE Record (section 2.3.4.2.3.2) is a document module, class module, or designer module.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private static short GetModuleTypeId(ModuleUnitType type)
         {
-            switch (type)
+            return type switch
             {
-                case ModuleUnitType.Module:
-                    return TypeModuleId;
-                case ModuleUnitType.Class:
-                    return TypeClassId;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                ModuleUnitType.Document => TypeDocumentId,
+                ModuleUnitType.Module => TypeModuleId,
+                ModuleUnitType.Class => TypeClassId,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
     }
 }

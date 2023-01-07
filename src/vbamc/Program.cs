@@ -1,7 +1,6 @@
 ﻿// Copyright 2022 Cisco Systems, Inc.
 // Licensed under MIT-style license (see LICENSE.txt file).
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using DocumentFormat.OpenXml;
@@ -20,6 +19,9 @@ public class Program
 
     [Option("-c|--class")]
     public IEnumerable<string> Classes { get; } = Enumerable.Empty<string>();
+
+    [Option("-d|--document")]
+    public string? Document { get; }
 
     [Option("-n|--name", Description = "Project name")]
     public string ProjectName { get; } = "VBAProject";
@@ -52,6 +54,18 @@ public class Program
         compiler.ProjectId = Guid.NewGuid();
         compiler.ProjectName = this.ProjectName;
         compiler.CompanyName = this.CompanyName;
+
+        // add document module
+        if (this.Document != null)
+        {
+            var path = this.Document;
+            if (!Path.IsPathRooted(path))
+            {
+                path = Path.Combine(wd, path);
+            }
+
+            compiler.AddThisDocument(path);
+        }
 
         // add modules
         foreach (var module in this.Modules)

@@ -1,8 +1,6 @@
 ﻿// Copyright 2022 Cisco Systems, Inc.
 // Licensed under MIT-style license (see LICENSE.txt file).
 
-using System;
-
 namespace vbamc.Vba
 {
     public class ReferenceRecord
@@ -10,9 +8,14 @@ namespace vbamc.Vba
         public const short ReferenceNameId = 0x0016;
         public const short ReferenceNameReserved = 0x003E;
 
+        protected ReferenceRecord(ReferenceRecordType type)
+        {
+            this.Type = type;
+        }
+
+        public ReferenceRecordType Type { get; }
+
         public string ReferenceName { get; set; } = "";
-        
-        public string Libid { get; set; } = "";
 
         public void WriteTo(BinaryWriter writer)
         {
@@ -33,19 +36,11 @@ namespace vbamc.Vba
             // For purposes of this implementation, we're only interested in the REGISTERED record.
 
             // REFERENCEREGISTERED record
-            var libidBytes = VbaEncodings.Default.GetBytes(this.Libid);
-            var sizeOfLibid = libidBytes.Length;
+            this.WriteInternalTo(writer);
+        }
 
-            Guard.EnsureNoNullCharacters(libidBytes, nameof(Libid), "Libid cannot contain null characters.");
-
-            int size = sizeof(int) + sizeOfLibid + sizeof(int) + sizeof(short);
-            
-            writer.Write((ushort)ReferenceRecordType.Registered);
-            writer.Write(size);
-            writer.Write(sizeOfLibid);
-            writer.Write(libidBytes);
-            writer.Write((uint)0);
-            writer.Write((ushort)0);
+        protected virtual void WriteInternalTo(BinaryWriter writer)
+        {
         }
     }
 }

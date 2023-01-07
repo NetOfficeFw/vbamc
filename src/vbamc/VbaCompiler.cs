@@ -33,9 +33,15 @@ namespace vbamc
             this.modules.Add(@class);
         }
 
+        public void AddThisDocument(string path)
+        {
+            var document = ModuleUnit.FromFile(path, ModuleUnitType.Document);
+            this.modules.Add(document);
+        }
+
         public string CompileVbaProject(string intermediatePath, string projectFilename)
         {
-            var moduleNames = this.modules.Select(m => m.Name).ToList();
+            var moduleNames = this.modules.OrderBy(m => m.Type).Select(m => m.Name).ToList();
 
             var storage = new CompoundFile();
             var projectId = this.ProjectId.ToString("B").ToUpperInvariant();
