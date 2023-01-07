@@ -2,8 +2,7 @@
 
 > Compile macro enabled add-ins for Microsoft Office applications.
 
-Compiler `vbamc` compiles Visual Basic source code and Ribbon customizations to a macro
-enabled add-in file for Microsoft Office applications.
+Compiler `vbamc` compiles Visual Basic source code and Ribbon customizations to Microsoft Office macro files or macro enabled add-ins. It supports Microsoft Word, Excel and PowerPoint.
 
 
 ## Installation
@@ -20,10 +19,11 @@ dotnet tool install --global vbamc
 Pass the list of source code files with modules and classes to the compiler:
 
 ```commandline
-vbamc -m Module.vb -c MyClass.vb -n "Sample Addin" --company "ACME"
+vbamc -m Module.vb -c MyClass.vb -f AcmeSample -n "Sample Addin" --company "ACME"
 ```
 
-It will generate the macro file.
+It will generate the macro files named `AcmeSampleMacro.{docm,xlsm,pptm}` usable
+in Microsoft Word, Excel and PowerPoint.
 
 
 ## License
