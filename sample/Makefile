@@ -5,13 +5,13 @@
 all: addin
 
 .PHONY: addin
-addin: bin/CustomMacro.pptm
+addin: bin/PresentationAddin.ppam
 
 MODULES = Module1.vb
 CLASSES = Class1.vb
 
-bin/CustomMacro.pptm: $(MODULES) $(CLASSES)
-	vbamc -m $(MODULES) -c $(CLASSES) -n "Sample Addin" --company "ACME"
+bin/PresentationAddin.ppam: $(MODULES) $(CLASSES)
+	../src/vbamc/bin/Debug/net7.0/vbamc -m $(MODULES) -c $(CLASSES) -n "Sample Addin" --company "ACME" --user-profile-path "/Users/demo"
 
 .PHONY: clean
 clean:

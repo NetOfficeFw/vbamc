@@ -7,5 +7,6 @@ Public Sub Auto_Open()
 End Sub
 
 Public Sub OnActionAbout(control As IRibbonControl)
+    MsgBox "User profile: ~/"
     MsgBox "Hello world from " & Application.Name & ", PID " & CStr(GetCurrentProcessId)
 End Sub
