@@ -64,5 +64,5 @@ Before you begin a VBA project, ensure that you have the time to work with VBA. 
 
 Source code is licensed under [MIT License](LICENSE.txt).
 
-Copyright © 2022 Jozef Izso  
-© 2022 Cisco Systems, Inc. All rights reserved.
+Copyright © 2023 Jozef Izso  
+© 2023 Cisco Systems, Inc. All rights reserved.
