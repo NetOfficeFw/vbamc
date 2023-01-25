@@ -20,8 +20,8 @@ public class Program
     [Option("-c|--class")]
     public IEnumerable<string> Classes { get; } = Enumerable.Empty<string>();
 
-    [Option("-d|--document")]
-    public string? Document { get; }
+    // [Option("-d|--document")]
+    // public string? Document { get; }
 
     [Option("-n|--name", Description = "Project name")]
     public string ProjectName { get; } = "VBAProject";
@@ -59,17 +59,17 @@ public class Program
         compiler.CompanyName = this.CompanyName;
         compiler.UserProfilePath = this.UserProfilePath;
 
-        // add document module
-        if (this.Document != null)
-        {
-            var path = this.Document;
-            if (!Path.IsPathRooted(path))
-            {
-                path = Path.Combine(wd, path);
-            }
+        // // add document module
+        // if (this.Document != null)
+        // {
+        //     var path = this.Document;
+        //     if (!Path.IsPathRooted(path))
+        //     {
+        //         path = Path.Combine(wd, path);
+        //     }
 
-            compiler.AddThisDocument(path);
-        }
+        //     compiler.AddThisDocument(path);
+        // }
 
         // add modules
         foreach (var module in this.Modules)
