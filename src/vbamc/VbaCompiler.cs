@@ -21,21 +21,23 @@ namespace vbamc
 
         public string? CompanyName { get; set; }
 
+        public string? UserProfilePath { get; set; }
+
         public void AddModule(string path)
         {
-            var module = ModuleUnit.FromFile(path, ModuleUnitType.Module);
+            var module = ModuleUnit.FromFile(path, ModuleUnitType.Module, this.UserProfilePath);
             this.modules.Add(module);
         }
 
         public void AddClass(string path)
         {
-            var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class);
+            var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class, this.UserProfilePath);
             this.modules.Add(@class);
         }
 
         public void AddThisDocument(string path)
         {
-            var document = ModuleUnit.FromFile(path, ModuleUnitType.Document);
+            var document = ModuleUnit.FromFile(path, ModuleUnitType.Document, this.UserProfilePath);
             this.modules.Add(document);
         }
 

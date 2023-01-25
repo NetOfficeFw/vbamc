@@ -45,11 +45,11 @@ namespace vbamc.Vba
             _ => this.Name,
         };
 
-        public static ModuleUnit FromFile(string path, ModuleUnitType type)
+        public static ModuleUnit FromFile(string path, ModuleUnitType type, string? userProfilePath)
         {
             var name = Path.GetFileNameWithoutExtension(path);
             var content = File.ReadAllText(path);
-            var userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            userProfilePath = userProfilePath ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
             content = content.Replace("~/", userProfilePath + Path.DirectorySeparatorChar);
 

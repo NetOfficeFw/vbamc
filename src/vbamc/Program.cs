@@ -38,6 +38,9 @@ public class Program
     [Option("--intermediate", Description = "Intermediate path for build output")]
     public string IntermediatePath { get; } = "obj";
 
+    [Option("--user-profile-path", Description = "Path to the user profile to replace the ~/ expression")]
+    public string? UserProfilePath { get; }
+
     private void OnExecute()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -54,6 +57,7 @@ public class Program
         compiler.ProjectId = Guid.NewGuid();
         compiler.ProjectName = this.ProjectName;
         compiler.CompanyName = this.CompanyName;
+        compiler.UserProfilePath = this.UserProfilePath;
 
         // add document module
         if (this.Document != null)
