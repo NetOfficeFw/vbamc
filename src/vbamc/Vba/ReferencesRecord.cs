@@ -32,7 +32,7 @@ namespace vbamc.Vba
 
             // TODO: fix
             // if (project.IsTargetWordMacro)
-            wordNormalDocument.WriteTo(writer);
+            // wordNormalDocument.WriteTo(writer);
 
             office.WriteTo(writer);
         }
