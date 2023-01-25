@@ -97,12 +97,12 @@ public class Program
 
         var vbaProjectPath = compiler.CompileVbaProject(intermediatePath, outputProjectName);
 
-        compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
+        // compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
         compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.AddIn);
 
-        compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
-        compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.AddIn);
+        // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
+        // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.AddIn);
 
-        compiler.CompileWordMacroFile(outputPath, this.FileName, vbaProjectPath, WordprocessingDocumentType.MacroEnabledDocument);
+        // compiler.CompileWordMacroFile(outputPath, this.FileName, vbaProjectPath, WordprocessingDocumentType.MacroEnabledDocument);
     }
 }
