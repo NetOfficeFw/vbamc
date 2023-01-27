@@ -1,0 +1,61 @@
+name: test
+
+on:
+  push:
+    branches: "build"
+  pull_request:
+    branches: "main"
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: 0
+  RestoreLockedMode: true
+  Configuration: Release
+  RepositoryBranch: '${{ github.ref_name }}'
+  RepositoryCommit: '${{ github.sha }}'
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        Configuration: ['Debug', 'Release']
+
+    env:
+      Configuration: '${{ matrix.configuration }}'
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7
+
+    - name: restore
+      run: dotnet restore
+
+    - name: build
+      run: dotnet build --no-restore
+
+    - name: test
+      run: dotnet test --no-restore --no-build
+
+    - name: pack
+      run: |
+        dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
+        dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
+
+    - name: publish artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: 'vbamc_packages_${{ matrix.configuration }}'
+        path: '${{ github.workspace }}/dist'
