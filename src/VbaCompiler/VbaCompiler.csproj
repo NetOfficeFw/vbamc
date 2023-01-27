@@ -1,46 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Version>1.3.0</Version>
+    <PackageId>NetOfficeFw.VbaCompiler</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Company>NetOfficeFw</Company>
-    <Authors>Jozef Izso</Authors>
-    <Copyright>Copyright © 2023 Jozef Izso, © 2023 Cisco Systems, Inc. All rights reserved.</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/NetOfficeFw/vbamc</PackageProjectUrl>
-    <Description>Compiler vbamc compiles Visual Basic source code and Ribbon customizations to a macro enabled add-in file for Microsoft Office applications.</Description>
-    <PackageTags>tool;compiler;VBA;macro;addin;office</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>Icon.png</PackageIcon>
-  </PropertyGroup>
-
-  <!-- Source Link support -->
-  <PropertyGroup>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <ContinuousIntegrationBuild Condition=" '$(GITHUB_ACTIONS)' == 'true' ">true</ContinuousIntegrationBuild>
+    <Description>Library with compiler for Visual Basic for Applications projects. Source code files and Ribbon customizations are compiled to Microsoft Office macro files.</Description>
+    <PackageTags>library;compiler;VBA;macro;addin;office</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="OpenMcdf" Version="2.2.1.12" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\VbaCompression\src\Kavod.Vba.Compression\Kavod.Vba.Compression.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
