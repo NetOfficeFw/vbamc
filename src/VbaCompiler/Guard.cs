@@ -22,6 +22,6 @@ namespace vbamc
             {
                 throw new ArgumentOutOfRangeException(paramName, message);
             }
-        }        
+        }
     }
 }

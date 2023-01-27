@@ -1,8 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <PackAsTool>true</PackAsTool>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -43,21 +41,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\lib\VbaCompression\src\Kavod.Vba.Compression\Kavod.Vba.Compression.csproj" />
-    <ProjectReference Include="..\VbaCompiler\VbaCompiler.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="data\MacroTemplate.dotx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="data\MacroTemplate.potm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="data\MacroTemplate.xltx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-    <None Include="Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
