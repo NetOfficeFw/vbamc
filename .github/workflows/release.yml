@@ -1,11 +1,9 @@
-name: build
+name: release
 
 on:
   push:
-    branches: [ "main", "build" ]
+    branches: "build"
     tags: [ 'v*.*.*' ]
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -50,12 +48,12 @@ jobs:
       run: dotnet build --no-restore
 
     - name: test
-      run: dotnet test
+      run: dotnet test --no-restore --no-build
 
-    - name: sign vbamc library
+    - name: sign libraries
       id: sign_library
       if: ${{ success() && github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-      working-directory: '${{ github.workspace}}/src/vbamc'
+      working-directory: '${{ github.workspace}}'
       run: |
           AzureSignTool.exe sign `
           --file-digest sha256 `
@@ -69,18 +67,22 @@ jobs:
           --azure-key-vault-client-secret "${{ secrets.AZURESIGNTOOL_CLIENT_SECRET }}" `
           --azure-key-vault-certificate "CS-HSMv2" `
           --verbose `
-          obj/Release/net6.0/vbamc.dll `
-          obj/Release/net7.0/vbamc.dll
+          src/VbaCompiler/obj/Release/net6.0/VbaCompiler.dll `
+          src/VbaCompiler/obj/Release/net7.0/VbaCompiler.dll `
+          src/vbamc/obj/Release/net6.0/vbamc.dll `
+          src/vbamc/obj/Release/net7.0/vbamc.dll
 
     - name: pack
       if: ${{ always() }}
-      run: dotnet pack --no-build --no-restore -o dist
+      run: |
+        dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
+        dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
 
-    - name: sign vbamc package
+    - name: sign packages
       if: ${{ steps.sign_library.outcome == 'success' }}
       working-directory: '${{ github.workspace}}/dist'
       run: |
-          NuGetKeyVaultSignTool.exe sign vbamc*.nupkg `
+          NuGetKeyVaultSignTool.exe sign *.nupkg `
           --file-digest sha256 `
           --timestamp-rfc3161 http://timestamp.digicert.com `
           --timestamp-digest sha256 `
@@ -93,5 +95,5 @@ jobs:
     - name: publish artifact
       uses: actions/upload-artifact@v3
       with:
-        name: vbamc
+        name: release
         path: '${{ github.workspace }}/dist'
