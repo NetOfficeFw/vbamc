@@ -106,7 +106,7 @@ namespace vbamc
             return projectOutputPath;
         }
 
-        public void CompilePowerPointMacroFile(string outputPath, string baseFilename, string vbaProjectPath, PresentationDocumentType documentType)
+        public string CompilePowerPointMacroFile(string outputPath, string baseFilename, string vbaProjectPath, PresentationDocumentType documentType)
         {
             DirectoryEx.EnsureDirectory(outputPath);
             var suffix = documentType == PresentationDocumentType.AddIn ? "Addin.ppam" : "Macro.pptm";
@@ -135,10 +135,11 @@ namespace vbamc
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            macroTemplate.SaveAs(targetMacroPath);
+            using var macroFile = macroTemplate.SaveAs(targetMacroPath);
+            return targetMacroPath;
         }
 
-        public void CompileExcelMacroFile(string outputPath, string baseFilename, string vbaProjectPath, SpreadsheetDocumentType documentType)
+        public string CompileExcelMacroFile(string outputPath, string baseFilename, string vbaProjectPath, SpreadsheetDocumentType documentType)
         {
             DirectoryEx.EnsureDirectory(outputPath);
             var suffix = documentType == SpreadsheetDocumentType.AddIn ? "Addin.xlam" : "Macro.xlsm";
@@ -167,10 +168,11 @@ namespace vbamc
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            macroTemplate.SaveAs(targetMacroPath);
+            using var macroFile = macroTemplate.SaveAs(targetMacroPath);
+            return targetMacroPath;
         }
 
-        public void CompileWordMacroFile(string outputPath, string baseFilename, string vbaProjectPath, WordprocessingDocumentType documentType)
+        public string CompileWordMacroFile(string outputPath, string baseFilename, string vbaProjectPath, WordprocessingDocumentType documentType)
         {
             if (documentType != WordprocessingDocumentType.MacroEnabledDocument)
             {
@@ -204,7 +206,8 @@ namespace vbamc
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            macroTemplate.SaveAs(targetMacroPath);
+            using var macroFile = macroTemplate.SaveAs(targetMacroPath);
+            return targetMacroPath;
         }
 
         private void AttachRibbonCustomization(RibbonAndBackstageCustomizationsPart ribbonPart, string sourcePath)
@@ -219,7 +222,7 @@ namespace vbamc
             var ribbonContent = File.ReadAllText(ribbonPath);
             ribbonPart.CustomUI = new CustomUI(ribbonContent);
             ribbonPart.CustomUI.Save();
-            Console.WriteLine($"Added ribbon customization from file '{ribbonPath}'");
+            //Console.WriteLine($"Added ribbon customization from file '{ribbonPath}'");
 
             var images = Directory.EnumerateFiles(Path.Combine(customUiDir, "images"), "*.png");
             foreach (var imagePath in images)
