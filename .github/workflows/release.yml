@@ -95,5 +95,5 @@ jobs:
     - name: publish artifact
       uses: actions/upload-artifact@v3
       with:
-        name: build_${{ github.run_id }}_preview${{ github.run_number }}
+        name: vbamc_build_${{ github.run_id }}_preview${{ github.run_number }}
         path: '${{ github.workspace }}/dist'
