@@ -19,7 +19,7 @@ compiler.AddClass("MyClass.vb");
 var vbaProjectPath = compiler.CompileVbaProject("obj", "vbaProject.bin");
 
 // generate Excel macro file
-var macroFile = compiler.CompileExcelMacroFile("bin", "MyMacro", vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
+var macroFile = compiler.CompileExcelMacroFile("bin", "MyMacro.xlsm", vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
 ```
 
 ### Requirements

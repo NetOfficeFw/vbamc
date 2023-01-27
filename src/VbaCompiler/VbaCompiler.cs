@@ -106,11 +106,9 @@ namespace vbamc
             return projectOutputPath;
         }
 
-        public string CompilePowerPointMacroFile(string outputPath, string baseFilename, string vbaProjectPath, PresentationDocumentType documentType)
+        public string CompilePowerPointMacroFile(string outputPath, string outputFileName, string vbaProjectPath, PresentationDocumentType documentType)
         {
             DirectoryEx.EnsureDirectory(outputPath);
-            var suffix = documentType == PresentationDocumentType.AddIn ? "Addin.ppam" : "Macro.pptm";
-            string outputFileName = baseFilename + suffix;
 
             var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.potm");
             var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
@@ -139,11 +137,9 @@ namespace vbamc
             return targetMacroPath;
         }
 
-        public string CompileExcelMacroFile(string outputPath, string baseFilename, string vbaProjectPath, SpreadsheetDocumentType documentType)
+        public string CompileExcelMacroFile(string outputPath, string outputFileName, string vbaProjectPath, SpreadsheetDocumentType documentType)
         {
             DirectoryEx.EnsureDirectory(outputPath);
-            var suffix = documentType == SpreadsheetDocumentType.AddIn ? "Addin.xlam" : "Macro.xlsm";
-            string outputFileName = baseFilename + suffix;
 
             var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.xltx");
             var macroTemplate = SpreadsheetDocument.CreateFromTemplate(macroTemplatePath);
@@ -172,7 +168,7 @@ namespace vbamc
             return targetMacroPath;
         }
 
-        public string CompileWordMacroFile(string outputPath, string baseFilename, string vbaProjectPath, WordprocessingDocumentType documentType)
+        public string CompileWordMacroFile(string outputPath, string outputFileName, string vbaProjectPath, WordprocessingDocumentType documentType)
         {
             if (documentType != WordprocessingDocumentType.MacroEnabledDocument)
             {
@@ -180,8 +176,6 @@ namespace vbamc
             }
 
             DirectoryEx.EnsureDirectory(outputPath);
-            var suffix = "Macro.docm";
-            string outputFileName = baseFilename + suffix;
 
             var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.dotx");
             var macroTemplate = WordprocessingDocument.CreateFromTemplate(macroTemplatePath);
