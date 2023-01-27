@@ -52,7 +52,7 @@ jobs:
 
     - name: sign libraries
       id: sign_library
-      if: ${{ success() && github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
+      if: ${{ success() && github.event_name == 'push' }}
       working-directory: '${{ github.workspace}}'
       run: |
           AzureSignTool.exe sign `
@@ -75,8 +75,8 @@ jobs:
     - name: pack
       if: ${{ always() }}
       run: |
-        dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
-        dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
+        dotnet pack src/VbaCompiler/VbaCompiler.csproj --version-suffix "preview${{ github.run_number }}" --no-build --no-restore -o dist
+        dotnet pack src/vbamc/vbamc.csproj --version-suffix "preview${{ github.run_number }}" --no-build --no-restore -o dist
 
     - name: sign packages
       if: ${{ steps.sign_library.outcome == 'success' }}
@@ -95,5 +95,5 @@ jobs:
     - name: publish artifact
       uses: actions/upload-artifact@v3
       with:
-        name: release
+        name: build_${{ github.run_id }}_preview${{ github.run_number }}
         path: '${{ github.workspace }}/dist'
