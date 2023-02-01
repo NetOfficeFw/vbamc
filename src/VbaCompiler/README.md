@@ -31,5 +31,7 @@ The compiler works on .NET 6 and .NET 7 runtimes on Windows and macOS.
 Discover samples in our repository at <https://github.com/NetOfficeFw/vbamc/tree/main/sample>
 
 
-_Project icon is licensed from Icons8 service under Universal Multimedia Licensing Agreement for Icons8._  
+_Project icon [Code][1] is licensed from Icons8 service under Universal Multimedia Licensing Agreement for Icons8._  
 _See <https://icons8.com/license> for more information_
+
+[1]: https://icons8.com/icon/43988/code
