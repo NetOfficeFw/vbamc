@@ -2,7 +2,6 @@ name: release
 
 on:
   push:
-    branches: "build"
     tags: [ 'v*.*.*' ]
 
 permissions:
@@ -75,8 +74,8 @@ jobs:
     - name: pack
       if: ${{ always() }}
       run: |
-        dotnet pack src/VbaCompiler/VbaCompiler.csproj --version-suffix "preview${{ github.run_number }}" --no-build --no-restore -o dist
-        dotnet pack src/vbamc/vbamc.csproj --version-suffix "preview${{ github.run_number }}" --no-build --no-restore -o dist
+        dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
+        dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
 
     - name: sign packages
       id: sign_package
