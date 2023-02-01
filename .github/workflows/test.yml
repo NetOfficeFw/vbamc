@@ -2,16 +2,12 @@ name: test
 
 on:
   push:
-    branches: "build"
+    branches: main
   pull_request:
-    branches: "main"
+    branches: main
 
 permissions:
   contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }} 
-  cancel-in-progress: true
 
 env:
   DOTNET_NOLOGO: 1
