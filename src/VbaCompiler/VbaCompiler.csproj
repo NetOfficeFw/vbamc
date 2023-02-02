@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>NetOfficeFw.VbaCompiler</PackageId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Library with compiler for Visual Basic for Applications projects. Source code files and Ribbon customizations are compiled to Microsoft Office macro files.</Description>
+    <PackageTags>library;compiler;VBA;macro;addin;office</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
+    <PackageReference Include="OpenMcdf" Version="2.2.1.12" />
+    <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib\VbaCompression\src\Kavod.Vba.Compression\Kavod.Vba.Compression.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

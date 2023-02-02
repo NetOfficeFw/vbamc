@@ -29,8 +29,8 @@ public class Program
     [Option("--company", Description = "Company name")]
     public string? CompanyName { get; }
 
-    [Option("-f|--file", Description = "Target add-in file name")]
-    public string FileName { get; } = "Presentation";
+    [Option("-f|--file", Description = "Target add-in file name with extension")]
+    public string FileName { get; } = "PresentationAddin.ppam";
 
     [Option("-o|--output", Description = "Target build output path")]
     public string OutputPath { get; } = "bin";
