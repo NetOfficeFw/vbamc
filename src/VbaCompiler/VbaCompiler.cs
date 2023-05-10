@@ -23,21 +23,27 @@ namespace vbamc
 
         public string? UserProfilePath { get; set; }
 
+        /// <summary>
+        /// Set to true for instance of VbaCompiler if generating add-ins on windows but are used on macOS to 
+        /// explicitly set directory separator char for macOS - otherwise platform default is used 
+        /// </summary>
+        public bool CompileForMacOnWindows { get; set; } = false;
+
         public void AddModule(string path)
         {
-            var module = ModuleUnit.FromFile(path, ModuleUnitType.Module, this.UserProfilePath);
+            var module = ModuleUnit.FromFile(path, ModuleUnitType.Module, this.UserProfilePath, this.CompileForMacOnWindows);
             this.modules.Add(module);
         }
 
         public void AddClass(string path)
         {
-            var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class, this.UserProfilePath);
+            var @class = ModuleUnit.FromFile(path, ModuleUnitType.Class, this.UserProfilePath, this.CompileForMacOnWindows);
             this.modules.Add(@class);
         }
 
         public void AddThisDocument(string path)
         {
-            var document = ModuleUnit.FromFile(path, ModuleUnitType.Document, this.UserProfilePath);
+            var document = ModuleUnit.FromFile(path, ModuleUnitType.Document, this.UserProfilePath, this.CompileForMacOnWindows);
             this.modules.Add(document);
         }
 
