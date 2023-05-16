@@ -112,7 +112,7 @@ namespace vbamc
             return projectOutputPath;
         }
 
-        public string CompilePowerPointMacroFile(string outputPath, string outputFileName, string vbaProjectPath, PresentationDocumentType documentType)
+        public string CompilePowerPointMacroFile(string outputPath, string outputFileName, string vbaProjectPath, PresentationDocumentType documentType, string? customSourcePath = null)
         {
             DirectoryEx.EnsureDirectory(outputPath);
 
@@ -128,7 +128,7 @@ namespace vbamc
             }
 
             var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
-            AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
+            AttachRibbonCustomization(ribbonPart, customSourcePath ?? Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
@@ -143,7 +143,7 @@ namespace vbamc
             return targetMacroPath;
         }
 
-        public string CompileExcelMacroFile(string outputPath, string outputFileName, string vbaProjectPath, SpreadsheetDocumentType documentType)
+        public string CompileExcelMacroFile(string outputPath, string outputFileName, string vbaProjectPath, SpreadsheetDocumentType documentType, string? customSourcePath = null)
         {
             DirectoryEx.EnsureDirectory(outputPath);
 
@@ -159,7 +159,7 @@ namespace vbamc
             }
 
             var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
-            AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
+            AttachRibbonCustomization(ribbonPart, customSourcePath ?? Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
@@ -174,7 +174,7 @@ namespace vbamc
             return targetMacroPath;
         }
 
-        public string CompileWordMacroFile(string outputPath, string outputFileName, string vbaProjectPath, WordprocessingDocumentType documentType)
+        public string CompileWordMacroFile(string outputPath, string outputFileName, string vbaProjectPath, WordprocessingDocumentType documentType, string? customSourcePath = null)
         {
             if (documentType != WordprocessingDocumentType.MacroEnabledDocument)
             {
@@ -195,7 +195,7 @@ namespace vbamc
             }
 
             var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
-            AttachRibbonCustomization(ribbonPart, Directory.GetCurrentDirectory());
+            AttachRibbonCustomization(ribbonPart, customSourcePath ?? Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
