@@ -19,6 +19,8 @@ namespace vbamc
 
         public string ProjectName { get; set; } = "Project";
 
+        public string ProjectVersion { get; set; } = "1";
+
         public string? CompanyName { get; set; }
 
         public string? UserProfilePath { get; set; }
@@ -131,6 +133,7 @@ namespace vbamc
             AttachRibbonCustomization(ribbonPart, customSourcePath ?? Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
+            macroTemplate.PackageProperties.Version = this.ProjectVersion;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
             if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
             {
@@ -162,6 +165,7 @@ namespace vbamc
             AttachRibbonCustomization(ribbonPart, customSourcePath ?? Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
+            macroTemplate.PackageProperties.Version = this.ProjectVersion;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
             if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
             {
@@ -198,6 +202,7 @@ namespace vbamc
             AttachRibbonCustomization(ribbonPart, customSourcePath ?? Directory.GetCurrentDirectory());
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
+            macroTemplate.PackageProperties.Version = this.ProjectVersion;
             var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
             if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
             {
