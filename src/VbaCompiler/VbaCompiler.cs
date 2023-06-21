@@ -19,7 +19,7 @@ namespace vbamc
 
         public string ProjectName { get; set; } = "Project";
 
-        public string ProjectVersion { get; set; } = "1";
+        public string? ProjectVersion { get; set; }
 
         public string? CompanyName { get; set; }
 
