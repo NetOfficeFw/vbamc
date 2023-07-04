@@ -103,8 +103,10 @@ namespace vbamc
 
             DirectoryEx.EnsureDirectory(intermediatePath);
 
+#if DEBUG
             var dirDebugPath = Path.Combine(intermediatePath, "dir.bin");
             File.WriteAllBytes(dirDebugPath, dirContent);
+#endif
 
             var projectOutputPath = Path.Combine(intermediatePath, projectFilename);
             storage.Save(projectOutputPath);
