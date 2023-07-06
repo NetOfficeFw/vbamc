@@ -236,7 +236,7 @@ namespace vbamc
             {
                 var imageFilename = Path.GetFileNameWithoutExtension(imagePath);
                 var imagePart = ribbonPart.AddImagePart(ImagePartType.Png, imageFilename);
-                using var imageStream = new FileStream(imagePath, FileMode.Open);
+                using var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
                 imagePart.FeedData(imageStream);
             }
         }
