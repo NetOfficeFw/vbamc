@@ -5,6 +5,7 @@ using System;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2010.CustomUI;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.CustomProperties;
 using Kavod.Vba.Compression;
 using OpenMcdf;
 using vbamc.Vba;
@@ -20,6 +21,8 @@ namespace vbamc
         public string ProjectName { get; set; } = "Project";
 
         public string? ProjectVersion { get; set; }
+
+        public string? CodeIdentity { get; set; }
 
         public string? CompanyName { get; set; }
 
@@ -136,10 +139,23 @@ namespace vbamc
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             macroTemplate.PackageProperties.Version = this.ProjectVersion;
-            var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+            var extendedProperties = macroTemplate.ExtendedFilePropertiesPart?.Properties;
+
+            var propCompany = extendedProperties?.Company;
             if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
             {
                 propCompany.Text = this.CompanyName;
+            }
+
+            if (this.CodeIdentity != null)
+            {
+                var codeIdentityProperty = new CustomDocumentProperty
+                {
+                    Name = "codeIdentity",
+                    InnerXml = this.CodeIdentity
+                };
+                extendedProperties?.AppendChild(codeIdentityProperty);
+                extendedProperties?.Save();
             }
 
             macroTemplate.ChangeDocumentType(documentType);
@@ -168,10 +184,23 @@ namespace vbamc
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             macroTemplate.PackageProperties.Version = this.ProjectVersion;
-            var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+            var extendedProperties = macroTemplate.ExtendedFilePropertiesPart?.Properties;
+
+            var propCompany = extendedProperties?.Company;
             if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
             {
                 propCompany.Text = this.CompanyName;
+            }
+
+            if (this.CodeIdentity != null)
+            {
+                var codeIdentityProperty = new CustomDocumentProperty
+                {
+                    Name = "codeIdentity",
+                    InnerXml = this.CodeIdentity
+                };
+                extendedProperties?.AppendChild(codeIdentityProperty);
+                extendedProperties?.Save();
             }
 
             macroTemplate.ChangeDocumentType(documentType);
@@ -205,10 +234,22 @@ namespace vbamc
 
             macroTemplate.PackageProperties.Title = this.ProjectName;
             macroTemplate.PackageProperties.Version = this.ProjectVersion;
-            var propCompany = macroTemplate.ExtendedFilePropertiesPart?.Properties.Company;
+            var extendedProperties = macroTemplate.ExtendedFilePropertiesPart?.Properties;
+            var propCompany = extendedProperties?.Company;
             if (propCompany != null && !string.IsNullOrEmpty(this.CompanyName))
             {
                 propCompany.Text = this.CompanyName;
+            }
+
+            if (this.CodeIdentity != null)
+            {
+                var codeIdentityProperty = new CustomDocumentProperty
+                {
+                    Name = "codeIdentity",
+                    InnerXml = this.CodeIdentity
+                };
+                extendedProperties?.AppendChild(codeIdentityProperty);
+                extendedProperties?.Save();
             }
 
             macroTemplate.ChangeDocumentType(documentType);
