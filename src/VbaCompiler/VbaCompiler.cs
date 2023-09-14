@@ -16,13 +16,13 @@ namespace vbamc
     {
         private IList<ModuleUnit> modules = new List<ModuleUnit>();
 
+        public IDictionary<string, string> ExtendedProperties { get; set; } = new Dictionary<string, string>();
+
         public Guid ProjectId { get; set; }
 
         public string ProjectName { get; set; } = "Project";
 
         public string? ProjectVersion { get; set; }
-
-        public string? CodeIdentity { get; set; }
 
         public string? CompanyName { get; set; }
 
@@ -147,16 +147,7 @@ namespace vbamc
                 propCompany.Text = this.CompanyName;
             }
 
-            if (this.CodeIdentity != null)
-            {
-                var codeIdentityProperty = new CustomDocumentProperty
-                {
-                    Name = "codeIdentity",
-                    InnerXml = this.CodeIdentity
-                };
-                extendedProperties?.AppendChild(codeIdentityProperty);
-                extendedProperties?.Save();
-            }
+            AddExtendedProperties(extendedProperties);
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
@@ -192,16 +183,7 @@ namespace vbamc
                 propCompany.Text = this.CompanyName;
             }
 
-            if (this.CodeIdentity != null)
-            {
-                var codeIdentityProperty = new CustomDocumentProperty
-                {
-                    Name = "codeIdentity",
-                    InnerXml = this.CodeIdentity
-                };
-                extendedProperties?.AppendChild(codeIdentityProperty);
-                extendedProperties?.Save();
-            }
+            AddExtendedProperties(extendedProperties);
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
@@ -241,16 +223,7 @@ namespace vbamc
                 propCompany.Text = this.CompanyName;
             }
 
-            if (this.CodeIdentity != null)
-            {
-                var codeIdentityProperty = new CustomDocumentProperty
-                {
-                    Name = "codeIdentity",
-                    InnerXml = this.CodeIdentity
-                };
-                extendedProperties?.AppendChild(codeIdentityProperty);
-                extendedProperties?.Save();
-            }
+            AddExtendedProperties(extendedProperties);
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
@@ -280,6 +253,20 @@ namespace vbamc
                 using var imageStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
                 imagePart.FeedData(imageStream);
             }
+        }
+
+        private void AddExtendedProperties(DocumentFormat.OpenXml.ExtendedProperties.Properties? extendedProperties)
+        {
+            foreach (var property in this.ExtendedProperties)
+            {
+                var newProperty = new CustomDocumentProperty
+                {
+                    Name = property.Key,
+                    InnerXml = property.Value
+                };
+                extendedProperties?.AppendChild(newProperty);
+            }
+            extendedProperties?.Save();
         }
     }
 }
