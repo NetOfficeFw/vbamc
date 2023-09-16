@@ -114,7 +114,7 @@ namespace vbamc
 #endif
 
             var projectOutputPath = Path.Combine(intermediatePath, projectFilename);
-            storage.Save(projectOutputPath);
+            storage.SaveAs(projectOutputPath);
 
             return projectOutputPath;
         }
