@@ -114,7 +114,7 @@ namespace vbamc
 #endif
 
             var projectOutputPath = Path.Combine(intermediatePath, projectFilename);
-            storage.Save(projectOutputPath);
+            storage.SaveAs(projectOutputPath);
 
             return projectOutputPath;
         }
@@ -151,7 +151,7 @@ namespace vbamc
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            using var macroFile = macroTemplate.SaveAs(targetMacroPath);
+            using var macroFile = macroTemplate.Clone(targetMacroPath);
             return targetMacroPath;
         }
 
@@ -187,7 +187,7 @@ namespace vbamc
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            using var macroFile = macroTemplate.SaveAs(targetMacroPath);
+            using var macroFile = macroTemplate.Clone(targetMacroPath);
             return targetMacroPath;
         }
 
@@ -227,7 +227,7 @@ namespace vbamc
 
             macroTemplate.ChangeDocumentType(documentType);
             var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            using var macroFile = macroTemplate.SaveAs(targetMacroPath);
+            using var macroFile = macroTemplate.Clone(targetMacroPath);
             return targetMacroPath;
         }
 
