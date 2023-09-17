@@ -35,9 +35,6 @@ public class Program
     [Option("-o|--output", Description = "Target build output path")]
     public string OutputPath { get; } = "bin";
 
-    [Option("--intermediate", Description = "Intermediate path for build output")]
-    public string IntermediatePath { get; } = "obj";
-
     [Option("--user-profile-path", Description = "Path to the user profile to replace the ~/ expression")]
     public string? UserProfilePath { get; }
 
@@ -47,10 +44,6 @@ public class Program
 
         var wd = Directory.GetCurrentDirectory();
         var outputPath = Path.Combine(wd, this.OutputPath);
-        var intermediatePath = Path.Combine(wd, this.IntermediatePath);
-
-        var outputProjectName = @"vbaProject.bin";
-        var outputFileName = this.FileName;
 
         var compiler = new VbaCompiler();
 
@@ -95,10 +88,13 @@ public class Program
             compiler.AddClass(path);
         }
 
-        var vbaProjectPath = compiler.CompileVbaProject(intermediatePath, outputProjectName);
+        DirectoryEx.EnsureDirectory(outputPath);
+        using var outputMacroFile = File.Create(Path.Combine(outputPath, this.FileName));
+
+        var vbaProjectMemory = compiler.CompileVbaProject();
 
         // compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
-        compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.AddIn);
+        compiler.CompilePowerPointMacroFile(outputMacroFile, vbaProjectMemory, PresentationDocumentType.AddIn);
 
         // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
         // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.AddIn);

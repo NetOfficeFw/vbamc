@@ -52,7 +52,16 @@ namespace vbamc
             this.modules.Add(document);
         }
 
-        public string CompileVbaProject(string intermediatePath, string projectFilename)
+        public MemoryStream CompileVbaProject()
+        {
+            var vbaProjectMemory = new MemoryStream();
+            this.CompileVbaProject(vbaProjectMemory);
+            vbaProjectMemory.Position = 0;
+
+            return vbaProjectMemory;
+        }
+
+        public void CompileVbaProject(Stream stream)
         {
             var moduleNames = this.modules.OrderBy(m => m.Type).Select(m => m.Name).ToList();
 
@@ -106,32 +115,18 @@ namespace vbamc
                 moduleStream.WriteTo(vbaStorage);
             }
 
-            DirectoryEx.EnsureDirectory(intermediatePath);
-
-#if DEBUG
-            var dirDebugPath = Path.Combine(intermediatePath, "dir.bin");
-            File.WriteAllBytes(dirDebugPath, dirContent);
-#endif
-
-            var projectOutputPath = Path.Combine(intermediatePath, projectFilename);
-            storage.SaveAs(projectOutputPath);
-
-            return projectOutputPath;
+            storage.Save(stream);
         }
 
-        public string CompilePowerPointMacroFile(string outputPath, string outputFileName, string vbaProjectPath, PresentationDocumentType documentType, string? customSourcePath = null)
+        public void CompilePowerPointMacroFile(Stream outputMacroFileStream, Stream vbaProjectStream, PresentationDocumentType documentType, string? customSourcePath = null)
         {
-            DirectoryEx.EnsureDirectory(outputPath);
-
             var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.potm");
             var macroTemplate = PresentationDocument.CreateFromTemplate(macroTemplatePath);
             var mainDoc = macroTemplate.PresentationPart;
             if (mainDoc != null)
             {
                 var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
-                using var reader = File.OpenRead(vbaProjectPath);
-                vbaProject.FeedData(reader);
-                reader.Close();
+                vbaProject.FeedData(vbaProjectStream);
             }
 
             var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
@@ -150,24 +145,18 @@ namespace vbamc
             AddExtendedProperties(extendedProperties);
 
             macroTemplate.ChangeDocumentType(documentType);
-            var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            using var macroFile = macroTemplate.Clone(targetMacroPath);
-            return targetMacroPath;
+            using var tempMacroFile = macroTemplate.Clone(outputMacroFileStream);
         }
 
-        public string CompileExcelMacroFile(string outputPath, string outputFileName, string vbaProjectPath, SpreadsheetDocumentType documentType, string? customSourcePath = null)
+        public void CompileExcelMacroFile(Stream outputMacroFileStream, Stream vbaProjectStream, SpreadsheetDocumentType documentType, string? customSourcePath = null)
         {
-            DirectoryEx.EnsureDirectory(outputPath);
-
             var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.xltx");
             var macroTemplate = SpreadsheetDocument.CreateFromTemplate(macroTemplatePath);
             var mainDoc = macroTemplate.WorkbookPart;
             if (mainDoc != null)
             {
                 var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
-                using var reader = File.OpenRead(vbaProjectPath);
-                vbaProject.FeedData(reader);
-                reader.Close();
+                vbaProject.FeedData(vbaProjectStream);
             }
 
             var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
@@ -186,19 +175,15 @@ namespace vbamc
             AddExtendedProperties(extendedProperties);
 
             macroTemplate.ChangeDocumentType(documentType);
-            var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            using var macroFile = macroTemplate.Clone(targetMacroPath);
-            return targetMacroPath;
+            using var macroFile = macroTemplate.Clone(outputMacroFileStream);
         }
 
-        public string CompileWordMacroFile(string outputPath, string outputFileName, string vbaProjectPath, WordprocessingDocumentType documentType, string? customSourcePath = null)
+        public void CompileWordMacroFile(Stream outputMacroFileStream, Stream vbaProjectStream, WordprocessingDocumentType documentType, string? customSourcePath = null)
         {
             if (documentType != WordprocessingDocumentType.MacroEnabledDocument)
             {
                 throw new ArgumentOutOfRangeException(nameof(documentType), "Compiler supports only WordprocessingDocumentType.MacroEnabledDocument value.");
             }
-
-            DirectoryEx.EnsureDirectory(outputPath);
 
             var macroTemplatePath = Path.Combine(AppContext.BaseDirectory, @"data/MacroTemplate.dotx");
             var macroTemplate = WordprocessingDocument.CreateFromTemplate(macroTemplatePath);
@@ -206,9 +191,7 @@ namespace vbamc
             if (mainDoc != null)
             {
                 var vbaProject = mainDoc.AddNewPart<VbaProjectPart>();
-                using var reader = File.OpenRead(vbaProjectPath);
-                vbaProject.FeedData(reader);
-                reader.Close();
+                vbaProject.FeedData(vbaProjectStream);
             }
 
             var ribbonPart = macroTemplate.RibbonAndBackstageCustomizationsPart ?? macroTemplate.AddRibbonAndBackstageCustomizationsPart();
@@ -226,9 +209,7 @@ namespace vbamc
             AddExtendedProperties(extendedProperties);
 
             macroTemplate.ChangeDocumentType(documentType);
-            var targetMacroPath = Path.Combine(outputPath, outputFileName);
-            using var macroFile = macroTemplate.Clone(targetMacroPath);
-            return targetMacroPath;
+            using var macroFile = macroTemplate.Clone(outputMacroFileStream);
         }
 
         private void AttachRibbonCustomization(RibbonAndBackstageCustomizationsPart ribbonPart, string sourcePath)
