@@ -14,7 +14,6 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_GENERATE_ASPNET_CERTIFICATE: 0
   RestoreLockedMode: true
-  Configuration: Release
   RepositoryBranch: '${{ github.ref_name }}'
   RepositoryCommit: '${{ github.sha }}'
 
