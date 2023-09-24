@@ -1,0 +1,1 @@
+' Empty class file
