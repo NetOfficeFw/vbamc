@@ -1,6 +1,8 @@
 # Copyright 2022 Cisco Systems, Inc.
 # Licensed under MIT-style license (see LICENSE.txt file).
 
+framework := net7.0
+
 .PHONY: all
 all: addin
 
@@ -11,7 +13,7 @@ MODULES = Module1.vb
 CLASSES = Class1.vb
 
 bin/PresentationAddin.ppam: $(MODULES) $(CLASSES)
-	../src/vbamc/bin/Debug/net7.0/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME" --user-profile-path "/Users/demo"
+	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME" --user-profile-path "/Users/demo"
 
 .PHONY: clean
 clean:
