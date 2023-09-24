@@ -88,17 +88,37 @@ public class Program
             compiler.AddClass(path);
         }
 
+
         DirectoryEx.EnsureDirectory(outputPath);
         using var outputMacroFile = File.Create(Path.Combine(outputPath, this.FileName));
-
         var vbaProjectMemory = compiler.CompileVbaProject();
 
-        // compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
-        compiler.CompilePowerPointMacroFile(outputMacroFile, vbaProjectMemory, PresentationDocumentType.AddIn);
+        var extension = Path.GetExtension(this.FileName).ToLowerInvariant();
+        switch (extension)
+        {
+            // Microsoft PowerPoint
+            case ".pptm":
+                compiler.CompilePowerPointMacroFile(outputMacroFile, vbaProjectMemory, PresentationDocumentType.MacroEnabledPresentation);
+                break;
+            case ".ppam":
+                compiler.CompilePowerPointMacroFile(outputMacroFile, vbaProjectMemory, PresentationDocumentType.AddIn);
+                break;
 
-        // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
-        // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.AddIn);
+            // Microsoft Excel
+            case ".xlsm":
+                compiler.CompileExcelMacroFile(outputMacroFile, vbaProjectMemory, SpreadsheetDocumentType.MacroEnabledWorkbook);
+                break;
+            case ".xlam":
+                compiler.CompileExcelMacroFile(outputMacroFile, vbaProjectMemory, SpreadsheetDocumentType.AddIn);
+                break;
 
-        // compiler.CompileWordMacroFile(outputPath, this.FileName, vbaProjectPath, WordprocessingDocumentType.MacroEnabledDocument);
+            // Microsoft Word
+            case ".docm":
+                compiler.CompileWordMacroFile(outputMacroFile, vbaProjectMemory, WordprocessingDocumentType.MacroEnabledDocument);
+                break;
+
+            default:
+                throw new NotSupportedException($"File extension {extension} is not supported.");
+        }
     }
 }
