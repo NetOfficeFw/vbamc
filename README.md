@@ -19,11 +19,11 @@ dotnet tool install --global vbamc
 Pass the list of source code files with modules and classes to the compiler:
 
 ```commandline
-vbamc -m Module.vb -c MyClass.vb -f AcmeSample -n "Sample Addin" --company "ACME"
+vbamc -m Module.vb -c MyClass.vb -f AcmeSample.ppam -n "Sample Addin" --company "ACME"
 ```
 
-It will generate the macro files named `AcmeSampleMacro.{docm,xlsm,pptm}` usable
-in Microsoft Word, Excel and PowerPoint.
+It will generate the PowerPoint Add-in macro file named `AcmeSampleMacro.ppam` usable
+in Microsoft PowerPoint.
 
 
 ## When to use macros and why

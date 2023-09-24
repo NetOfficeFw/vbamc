@@ -2,7 +2,7 @@
   "profiles": {
     "vbamc": {
       "commandName": "Project",
-      "commandLineArgs": "-m Module1.vb -c Class1.vb -f \"Acme\" --company \"ACME\"",
+      "commandLineArgs": "-m Module1.vb -c Class1.vb -f \"Acme.ppam\" --company \"ACME\"",
       "workingDirectory": "d:\\dev\\github\\NetOfficeFw\\vbamc\\sample\\"
     }
   }

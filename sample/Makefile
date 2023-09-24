@@ -11,7 +11,7 @@ MODULES = Module1.vb
 CLASSES = Class1.vb
 
 bin/PresentationAddin.ppam: $(MODULES) $(CLASSES)
-	../src/vbamc/bin/Debug/net7.0/vbamc -m $(MODULES) -c $(CLASSES) -n "Sample Addin" --company "ACME" --user-profile-path "/Users/demo"
+	../src/vbamc/bin/Debug/net7.0/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME" --user-profile-path "/Users/demo"
 
 .PHONY: clean
 clean:
