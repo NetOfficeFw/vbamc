@@ -35,9 +35,6 @@ public class Program
     [Option("-o|--output", Description = "Target build output path")]
     public string OutputPath { get; } = "bin";
 
-    [Option("--intermediate", Description = "Intermediate path for build output")]
-    public string IntermediatePath { get; } = "obj";
-
     [Option("--user-profile-path", Description = "Path to the user profile to replace the ~/ expression")]
     public string? UserProfilePath { get; }
 
@@ -47,10 +44,6 @@ public class Program
 
         var wd = Directory.GetCurrentDirectory();
         var outputPath = Path.Combine(wd, this.OutputPath);
-        var intermediatePath = Path.Combine(wd, this.IntermediatePath);
-
-        var outputProjectName = @"vbaProject.bin";
-        var outputFileName = this.FileName;
 
         var compiler = new VbaCompiler();
 
@@ -95,14 +88,37 @@ public class Program
             compiler.AddClass(path);
         }
 
-        var vbaProjectPath = compiler.CompileVbaProject(intermediatePath, outputProjectName);
 
-        // compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.MacroEnabledPresentation);
-        compiler.CompilePowerPointMacroFile(outputPath, this.FileName, vbaProjectPath, PresentationDocumentType.AddIn);
+        DirectoryEx.EnsureDirectory(outputPath);
+        using var outputMacroFile = File.Create(Path.Combine(outputPath, this.FileName));
+        var vbaProjectMemory = compiler.CompileVbaProject();
 
-        // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.MacroEnabledWorkbook);
-        // compiler.CompileExcelMacroFile(outputPath, this.FileName, vbaProjectPath, SpreadsheetDocumentType.AddIn);
+        var extension = Path.GetExtension(this.FileName).ToLowerInvariant();
+        switch (extension)
+        {
+            // Microsoft PowerPoint
+            case ".pptm":
+                compiler.CompilePowerPointMacroFile(outputMacroFile, vbaProjectMemory, PresentationDocumentType.MacroEnabledPresentation);
+                break;
+            case ".ppam":
+                compiler.CompilePowerPointMacroFile(outputMacroFile, vbaProjectMemory, PresentationDocumentType.AddIn);
+                break;
 
-        // compiler.CompileWordMacroFile(outputPath, this.FileName, vbaProjectPath, WordprocessingDocumentType.MacroEnabledDocument);
+            // Microsoft Excel
+            case ".xlsm":
+                compiler.CompileExcelMacroFile(outputMacroFile, vbaProjectMemory, SpreadsheetDocumentType.MacroEnabledWorkbook);
+                break;
+            case ".xlam":
+                compiler.CompileExcelMacroFile(outputMacroFile, vbaProjectMemory, SpreadsheetDocumentType.AddIn);
+                break;
+
+            // Microsoft Word
+            case ".docm":
+                compiler.CompileWordMacroFile(outputMacroFile, vbaProjectMemory, WordprocessingDocumentType.MacroEnabledDocument);
+                break;
+
+            default:
+                throw new NotSupportedException($"File extension {extension} is not supported.");
+        }
     }
 }

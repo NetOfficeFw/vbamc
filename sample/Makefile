@@ -7,13 +7,16 @@ framework := net7.0
 all: addin
 
 .PHONY: addin
-addin: bin/PresentationAddin.ppam
+addin: bin/PresentationAddin.ppam bin/PresentationAddin.pptm
 
 MODULES = Module1.vb
 CLASSES = Class1.vb
 
 bin/PresentationAddin.ppam: $(MODULES) $(CLASSES)
-	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME" --user-profile-path "/Users/demo"
+	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME"
+
+bin/PresentationAddin.pptm: $(MODULES) $(CLASSES)
+	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.pptm" -n "Sample Addin" --company "ACME"
 
 .PHONY: clean
 clean:
