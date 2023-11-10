@@ -38,6 +38,9 @@ public class Program
     [Option("--user-profile-path", Description = "Path to the user profile to replace the ~/ expression")]
     public string? UserProfilePath { get; }
 
+    [Option("-p|--property", Description = "Extended property in the format name=value")]
+    public string[] ExtendedProperties { get; } = Array.Empty<string>();
+
     private void OnExecute()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -88,6 +91,11 @@ public class Program
             compiler.AddClass(path);
         }
 
+        foreach (var property in this.ExtendedProperties)
+        {
+            var parts = property.Split('=');
+            compiler.ExtendedProperties.Add(parts[0], parts[1]);
+        }
 
         DirectoryEx.EnsureDirectory(outputPath);
         using var outputMacroFile = File.Create(Path.Combine(outputPath, this.FileName));

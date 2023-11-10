@@ -13,10 +13,10 @@ MODULES = Module1.vb
 CLASSES = Class1.vb
 
 bin/PresentationAddin.ppam: $(MODULES) $(CLASSES)
-	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME"
+	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.ppam" -n "Sample Addin" --company "ACME" -p Generator=VbaCompiler
 
 bin/PresentationAddin.pptm: $(MODULES) $(CLASSES)
-	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.pptm" -n "Sample Addin" --company "ACME"
+	../src/vbamc/bin/Debug/$(framework)/vbamc -m $(MODULES) -c $(CLASSES) -f "PresentationAddin.pptm" -n "Sample Addin" --company "ACME" -p Generator=VbaCompiler
 
 .PHONY: clean
 clean:
