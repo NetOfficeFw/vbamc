@@ -1,8 +1,7 @@
-name: test
+name: ci
 
 on:
   push:
-    branches: main
   pull_request:
     branches: main
 
@@ -60,3 +59,33 @@ jobs:
       with:
         name: 'vbamc_packages_${{ matrix.configuration }}'
         path: '${{ github.workspace }}/dist'
+
+  benchmark:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: ['ubuntu-22.04', 'windows-2022', 'macos-13.0']
+
+    env:
+      Configuration: 'Release'
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8
+
+    - name: restore
+      run: dotnet restore
+
+    - name: build
+      run: dotnet build --no-restore -c Release tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
+
+    - name: run
+      run: dotnet run -c Release --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
