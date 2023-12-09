@@ -87,5 +87,15 @@ jobs:
     - name: build
       run: dotnet build --no-restore -c Release tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
 
-    - name: run
-      run: dotnet run -c Release --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
+    - name: benchmark
+      shell: bash
+      run: |
+        dotnet run -e github -c Release --artifacts --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
+
+        {
+          echo "## VBA Compiler Benchmark"
+          echo ""
+          echo "Runner: \`${{ matrix.os }}\`"
+          echo ""
+          cat "BenchmarkDotNet.Artifacts/results/CompileMacroBenchmark-report-github.md"
+        } >> $GITHUB_STEP_SUMMARY
