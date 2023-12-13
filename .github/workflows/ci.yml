@@ -69,6 +69,7 @@ jobs:
 
     env:
       Configuration: 'Release'
+      PROJECT: 'tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj'
 
     steps:
     - name: checkout
@@ -90,7 +91,7 @@ jobs:
     - name: benchmark
       shell: bash
       run: |
-        dotnet run -e github -c Release --artifacts --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
+        dotnet run -c Release --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj -- -e github --artifacts
 
         {
           echo "## VBA Compiler Benchmark"
