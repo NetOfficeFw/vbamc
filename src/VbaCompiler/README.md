@@ -24,7 +24,7 @@ var macroFilePath = compiler.CompileExcelMacroFile("bin", "MyMacro.xlsm", vbaPro
 
 ### Requirements
 
-The compiler works on .NET 6 and .NET 7 runtimes on Windows and macOS.
+The compiler works on .NET 6, 7 and 8 runtimes on Windows and macOS.
 
 ### Samples
 
