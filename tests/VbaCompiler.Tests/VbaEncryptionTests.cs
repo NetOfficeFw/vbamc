@@ -23,7 +23,7 @@ namespace VbaCompiler.Tests
             var actualProjectKey = VbaEncryption.GetProjectKey(projectId);
 
             // Assert
-            Assert.AreEqual(expectedProjectKey, actualProjectKey);
+            ClassicAssert.AreEqual(expectedProjectKey, actualProjectKey);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace VbaCompiler.Tests
             var actualProtectionState = state.ToEncryptedString(0x07);
 
             // Assert
-            Assert.AreEqual(expectedProtectionState, actualProtectionState);
+            ClassicAssert.AreEqual(expectedProtectionState, actualProtectionState);
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace VbaCompiler.Tests
             var actualProtectionState = state.ToEncryptedString(seed);
 
             // Assert
-            Assert.AreEqual(expectedProtectionState, actualProtectionState);
+            ClassicAssert.AreEqual(expectedProtectionState, actualProtectionState);
         }
 
         [Test]
@@ -68,7 +68,7 @@ namespace VbaCompiler.Tests
             var actualProtectionState = state.ToEncryptedString(seed);
 
             // Assert
-            Assert.AreEqual(expectedProtectionState, actualProtectionState);
+            ClassicAssert.AreEqual(expectedProtectionState, actualProtectionState);
         }
     }
 }
