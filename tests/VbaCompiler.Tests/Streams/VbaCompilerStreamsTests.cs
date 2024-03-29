@@ -38,7 +38,7 @@ namespace vbamc.Tests.Streams
             compiler.CompilePowerPointMacroFile(powerpointAddinMemory, vbaProjectMemory, PresentationDocumentType.MacroEnabledPresentation);
 
             // Assert
-            Assert.Greater(powerpointAddinMemory.Length, 1);
+            ClassicAssert.Greater(powerpointAddinMemory.Length, 1);
         }
     }
 }
