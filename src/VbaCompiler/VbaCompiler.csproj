@@ -12,11 +12,8 @@
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.2" />
     <PackageReference Include="OpenMcdf" Version="2.3.1" />
+    <PackageReference Include="NetOfficeFw.VbaCompression" Version="2.0.0" />
     <PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\lib\VbaCompression\src\Kavod.Vba.Compression\Kavod.Vba.Compression.csproj" />
   </ItemGroup>
 
   <ItemGroup>
