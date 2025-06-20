@@ -9,10 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="OpenMcdf" Version="2.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\lib\VbaCompression\src\Kavod.Vba.Compression\Kavod.Vba.Compression.csproj" />
+    <PackageReference Include="NetOfficeFw.VbaCompression" Version="2.0.0" />
   </ItemGroup>
 
 </Project>
