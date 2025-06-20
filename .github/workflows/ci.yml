@@ -3,7 +3,7 @@ name: ci
 on:
   push:
   pull_request:
-    branches: main
+    branches: [ 'main' ]
 
 permissions:
   contents: read
@@ -18,7 +18,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     strategy:
       matrix:
@@ -29,12 +29,12 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: setup dotnet
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8
 
@@ -55,7 +55,7 @@ jobs:
 
     - name: publish artifact
       if: ${{ matrix.configuration == 'Release' }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: 'vbamc_packages_${{ matrix.configuration }}'
         path: '${{ github.workspace }}/dist'
@@ -65,7 +65,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-22.04', 'windows-2022']
+        os: ['ubuntu-24.04', 'windows-2022']
 
     env:
       Configuration: 'Release'
@@ -73,12 +73,12 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: setup dotnet
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8
 
