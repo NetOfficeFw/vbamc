@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenMcdf" Version="2.3.1" />
-    <PackageReference Include="NetOfficeFw.VbaCompression" Version="2.0.0" />
+    <PackageReference Include="OpenMcdf" Version="2.4.1" />
+    <PackageReference Include="NetOfficeFw.VbaCompression" Version="3.0.1" />
   </ItemGroup>
 
 </Project>
