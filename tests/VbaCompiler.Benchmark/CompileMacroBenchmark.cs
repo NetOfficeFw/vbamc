@@ -14,7 +14,7 @@ public class CompileMacroBenchmark
     }
 
     [Benchmark]
-    public MemoryStream CompileVbaProject()
+    public MemoryStream CompilePowerPointAddinMacro()
     {
         // Arrange
         var sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "data");
