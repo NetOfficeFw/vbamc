@@ -67,7 +67,7 @@ jobs:
 
     strategy:
       matrix:
-        os: ['ubuntu-24.04', 'windows-2022']
+        os: ['ubuntu-24.04', 'windows-2025']
 
     env:
       Configuration: 'Release'
