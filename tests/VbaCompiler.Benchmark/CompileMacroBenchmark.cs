@@ -16,7 +16,7 @@ public class CompileMacroBenchmark
     [Benchmark]
     public MemoryStream CompileVbaProject()
     {
-        // Arrang
+        // Arrange
         var sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "data");
         var classPath = Path.Combine(sourcePath, "Class.vb");
         var modulePath = Path.Combine(sourcePath, "Module.vb");
