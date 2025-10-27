@@ -36,7 +36,9 @@ jobs:
     - name: setup dotnet
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8
+        dotnet-version: |
+          8
+          10
 
     - name: restore
       run: dotnet restore
@@ -80,7 +82,9 @@ jobs:
     - name: setup dotnet
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8
+        dotnet-version: |
+          8
+          10
 
     - name: restore
       run: dotnet restore
@@ -91,12 +95,12 @@ jobs:
     - name: benchmark
       shell: bash
       run: |
-        dotnet run -c Release --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj -- -e github --artifacts
+        dotnet run -c Release -f net10.0 --launch-profile benchmark --project tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj
 
         {
           echo "## VBA Compiler Benchmark"
           echo ""
           echo "Runner: \`${{ matrix.os }}\`"
           echo ""
-          cat "BenchmarkDotNet.Artifacts/results/CompileMacroBenchmark-report-github.md"
+          cat BenchmarkDotNet.Artifacts/results/*-report-github.md
         } >> $GITHUB_STEP_SUMMARY

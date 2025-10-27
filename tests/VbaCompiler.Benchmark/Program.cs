@@ -2,5 +2,4 @@
 
 using BenchmarkDotNet.Running;
 
-// var summary = BenchmarkRunner.Run<CompileVbaProjectBenchmark>();
-var summary = BenchmarkRunner.Run<CompileMacroBenchmark>();
+BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
