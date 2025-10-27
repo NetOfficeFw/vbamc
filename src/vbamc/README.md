@@ -11,7 +11,7 @@ vbamc --module Module.vb --class MyClass.vb --name "VBA Project" --company "ACME
 
 ### Requirements
 
-The compiler works on .NET 6, 7 and 8 runtimes on Windows and macOS.
+The compiler works on .NET 8 and 10 runtimes on Windows, Linux and macOS.
 
 ### Samples
 
