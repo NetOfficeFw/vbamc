@@ -45,7 +45,7 @@ jobs:
         dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
 
     - name: publish artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: VbaCompression_packages
         path: |
@@ -53,7 +53,7 @@ jobs:
           ${{ github.workspace }}/src/Kavod.Vba.Compression/README.md
 
     - name: publish artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: vbamc_build_${{ github.run_id }}_${{ github.run_number }}
         path: '${{ github.workspace }}/dist'
