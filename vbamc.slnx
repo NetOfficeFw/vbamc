@@ -1,0 +1,13 @@
+<Solution>
+  <Project Path="src/VbaCompiler/VbaCompiler.csproj" />
+  <Project Path="src/vbamc/vbamc.csproj" />
+  
+  <Folder Name="/utils/">
+    <Project Path="utils/vbad/vbad.csproj" />
+  </Folder>
+
+  <Folder Name="/tests/">
+    <Project Path="tests/VbaCompiler.Benchmark/VbaCompiler.Benchmark.csproj" />
+    <Project Path="tests/VbaCompiler.Tests/VbaCompiler.Tests.csproj" />
+  </Folder>
+</Solution>

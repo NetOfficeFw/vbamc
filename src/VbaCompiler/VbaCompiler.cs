@@ -14,9 +14,9 @@ namespace vbamc
 {
     public class VbaCompiler
     {
-        private IList<ModuleUnit> modules = new List<ModuleUnit>();
+        private List<ModuleUnit> modules = [];
 
-        public IDictionary<string, string> ExtendedProperties { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ExtendedProperties { get; set; } = [];
 
         public Guid ProjectId { get; set; }
 
