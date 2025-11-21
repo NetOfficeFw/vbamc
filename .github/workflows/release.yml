@@ -19,7 +19,7 @@ env:
 
 jobs:
   release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: checkout
@@ -28,7 +28,7 @@ jobs:
     - name: setup dotnet
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 8
+        dotnet-version: 10
 
     - name: restore
       run: dotnet restore

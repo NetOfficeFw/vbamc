@@ -15,10 +15,10 @@ public class Program
 
     [Required]
     [Option("-m|--module")]
-    public IEnumerable<string> Modules { get; } = Enumerable.Empty<string>();
+    public IEnumerable<string> Modules { get; } = [];
 
     [Option("-c|--class")]
-    public IEnumerable<string> Classes { get; } = Enumerable.Empty<string>();
+    public IEnumerable<string> Classes { get; } = [];
 
     // [Option("-d|--document")]
     // public string? Document { get; }
@@ -39,7 +39,7 @@ public class Program
     public string? UserProfilePath { get; }
 
     [Option("-p|--property", Description = "Extended property in the format name=value")]
-    public string[] ExtendedProperties { get; } = Array.Empty<string>();
+    public string[] ExtendedProperties { get; } = [];
 
     private void OnExecute()
     {

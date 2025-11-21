@@ -9,11 +9,11 @@ namespace vbamc.Vba
     {
         public ProjectRecord()
         {
-            this.HostExtenders = new List<string>()
-            {
+            this.HostExtenders =
+            [
                 Constants.HostExtender_VBE
-            };
-            this.Modules = new List<ModuleUnit>();
+            ];
+            this.Modules = [];
         }
 
         public string Id { get; set; } = "";
@@ -37,7 +37,7 @@ namespace vbamc.Vba
         /// </summary>
         public string VisibilityState { get; set; } = "";
 
-        public IList<string> HostExtenders { get; }
+        public List<string> HostExtenders { get; }
 
         public ICollection<ModuleUnit> Modules { get; set; }
 
