@@ -6,6 +6,7 @@ on:
 
 permissions:
   id-token: write
+  attestations: write
   contents: write
 
 env:
@@ -48,6 +49,12 @@ jobs:
 
     - name: pack
       run: dotnet pack --no-build --no-restore -o dist
+
+    - name: attestation
+      uses: actions/attest-build-provenance@v3
+      with:
+        subject-path: 'dist/*.nupkg'
+        show-summary: true
 
     - name: publish artifact
       uses: actions/upload-artifact@v5
