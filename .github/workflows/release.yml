@@ -48,7 +48,9 @@ jobs:
       run: dotnet test --no-build --no-restore
 
     - name: pack
-      run: dotnet pack --no-build --no-restore -o dist
+      run: |
+        dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
+        dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
 
     - name: attestation
       uses: actions/attest-build-provenance@v3
