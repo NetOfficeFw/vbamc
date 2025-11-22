@@ -65,11 +65,11 @@ namespace vbamc
         {
             var moduleNames = this.modules.OrderBy(m => m.Type).Select(m => m.Name).ToList();
 
-            var storage = new CompoundFile();
+            using var storage = RootStorage.Create(stream, flags: StorageModeFlags.LeaveOpen);
             var projectId = this.ProjectId.ToString("B").ToUpperInvariant();
 
             // PROJECT stream
-            var projectStream = storage.RootStorage.AddStream(StreamId.Project);
+            var projectStream = storage.CreateStream(StreamId.Project);
             var project = new ProjectRecord();
             project.Id = projectId;
             project.Name = this.ProjectName;
@@ -84,29 +84,29 @@ namespace vbamc
             project.VisibilityState = visibilityState.ToEncryptedString();
 
             var projectContent = project.Generate();
-            projectStream.SetData(projectContent);
+            projectStream.Write(projectContent, 0, projectContent.Length);
 
             // PROJECTwm stream
-            var projectWmStream = storage.RootStorage.AddStream(StreamId.ProjectWm);
+            var projectWmStream = storage.CreateStream(StreamId.ProjectWm);
             var projectWm = new ProjectWmRecord(moduleNames);
             var projectWmContent = projectWm.Generate();
-            projectWmStream.SetData(projectWmContent);
+            projectWmStream.Write(projectWmContent, 0, projectWmContent.Length);
 
             // VBA storage
-            var vbaStorage = storage.RootStorage.AddStorage(StorageId.VBA);
+            var vbaStorage = storage.CreateStorage(StorageId.VBA);
 
             // _VBA_PROJECT stream
-            var vbaProjectStream = vbaStorage.AddStream(StreamId.VbaProject);
+            var vbaProjectStream = vbaStorage.CreateStream(StreamId.VbaProject);
             var vbaProject = new VbaProjectStream();
             var vbaProjectContent = vbaProject.Generate();
-            vbaProjectStream.SetData(vbaProjectContent);
+            vbaProjectStream.Write(vbaProjectContent, 0, vbaProjectContent.Length);
 
             // dir stream
-            var dirStream = vbaStorage.AddStream(StreamId.Dir);
+            var dirStream = vbaStorage.CreateStream(StreamId.Dir);
             var dir = new DirStream();
             var dirContent = dir.GetData(project);
             var compressed = VbaCompression.Compress(dirContent);
-            dirStream.SetData(compressed);
+            dirStream.Write(compressed, 0, compressed.Length);
 
             // module streams
             foreach (var module in this.modules)
@@ -115,7 +115,6 @@ namespace vbamc
                 moduleStream.WriteTo(vbaStorage);
             }
 
-            storage.Save(stream);
         }
 
         public void CompilePowerPointMacroFile(Stream outputMacroFileStream, Stream vbaProjectStream, PresentationDocumentType documentType, string? customSourcePath = null)
