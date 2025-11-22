@@ -5,7 +5,8 @@ on:
     tags: [ 'v*.*.*' ]
 
 permissions:
-  contents: read
+  id-token: write
+  contents: write
 
 env:
   DOTNET_NOLOGO: 1
@@ -21,6 +22,10 @@ jobs:
   release:
     runs-on: ubuntu-24.04
 
+    environment:
+      name: production
+      url: https://www.nuget.org/packages/NetOfficeFw.VbaCompiler
+
     steps:
     - name: checkout
       uses: actions/checkout@v5
@@ -28,7 +33,9 @@ jobs:
     - name: setup dotnet
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 10
+        dotnet-version: |
+          8
+          10
 
     - name: restore
       run: dotnet restore
@@ -40,34 +47,33 @@ jobs:
       run: dotnet test --no-build --no-restore
 
     - name: pack
-      run: |
-        dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
-        dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
+      run: dotnet pack --no-build --no-restore -o dist
 
     - name: publish artifact
       uses: actions/upload-artifact@v5
       with:
-        name: VbaCompression_packages
+        name: vbamc_packages
         path: |
           ${{ github.workspace }}/dist
-          ${{ github.workspace }}/src/Kavod.Vba.Compression/README.md
+          ${{ github.workspace }}/src/VbaCompiler/README.md
+          ${{ github.workspace }}/src/vbamc/README.md
 
-    - name: publish artifact
-      uses: actions/upload-artifact@v5
+    - name: authenticate nuget.org
+      uses: NuGet/login@v1
+      id: nuget
       with:
-        name: vbamc_build_${{ github.run_id }}_${{ github.run_number }}
-        path: '${{ github.workspace }}/dist'
+        user: ${{ vars.NUGET_PUSH_USER }}
 
     - name: publish
-      working-directory: '${{ github.workspace}}/dist'
+      working-directory: '${{ github.workspace }}/dist'
       run: |
-          dotnet nuget push "*.nupkg" --api-key "$NUGET_PUSH_KEY" --source https://api.nuget.org/v3/index.json
+          dotnet nuget push "*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
       env:
-        NUGET_PUSH_KEY: ${{ secrets.NUGET_PUSH_KEY }}
+        NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
 
     - name: release
-      uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
-      if: always() && startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
       with:
         name: 'vbamc ${{ github.ref_name }}'
-        body_path: '${{ github.workspace }}/src/vbamc/README.md'
+        body_path: ${{ github.workspace }}/src/vbamc/README.md
