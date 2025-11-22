@@ -85,4 +85,4 @@ jobs:
       if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
       with:
         name: 'vbamc ${{ github.ref_name }}'
-        body_path: ${{ github.workspace }}/src/vbamc/README.md
+        body_path: ${{ github.workspace }}/RELEASE_NOTES.md
