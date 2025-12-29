@@ -57,7 +57,7 @@ jobs:
 
     - name: publish artifact
       if: ${{ matrix.configuration == 'Release' }}
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: 'vbamc_packages_${{ matrix.configuration }}'
         path: '${{ github.workspace }}/dist'
