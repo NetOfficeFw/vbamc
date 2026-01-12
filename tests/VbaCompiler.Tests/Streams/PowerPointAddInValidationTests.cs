@@ -42,10 +42,10 @@ namespace vbamc.Tests.Streams
             VbaCompiler compiler,
             PresentationDocumentType documentType)
         {
-            var vbaProjectStream = new MemoryStream();
             var outputStream = new MemoryStream();
 
-            compiler.CompileVbaProject(vbaProjectStream);
+            // Use the parameterless overload that returns a stream with position already at 0
+            var vbaProjectStream = compiler.CompileVbaProject();
             compiler.CompilePowerPointMacroFile(outputStream, vbaProjectStream, documentType);
 
             outputStream.Position = 0;
