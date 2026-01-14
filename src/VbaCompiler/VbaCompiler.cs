@@ -69,7 +69,7 @@ namespace vbamc
             var projectId = this.ProjectId.ToString("B").ToUpperInvariant();
 
             // PROJECT stream
-            var projectStream = storage.CreateStream(StreamId.Project);
+            using var projectStream = storage.CreateStream(StreamId.Project);
             var project = new ProjectRecord();
             project.Id = projectId;
             project.Name = this.ProjectName;
@@ -87,7 +87,7 @@ namespace vbamc
             projectStream.Write(projectContent, 0, projectContent.Length);
 
             // PROJECTwm stream
-            var projectWmStream = storage.CreateStream(StreamId.ProjectWm);
+            using var projectWmStream = storage.CreateStream(StreamId.ProjectWm);
             var projectWm = new ProjectWmRecord(moduleNames);
             var projectWmContent = projectWm.Generate();
             projectWmStream.Write(projectWmContent, 0, projectWmContent.Length);
@@ -96,13 +96,13 @@ namespace vbamc
             var vbaStorage = storage.CreateStorage(StorageId.VBA);
 
             // _VBA_PROJECT stream
-            var vbaProjectStream = vbaStorage.CreateStream(StreamId.VbaProject);
+            using var vbaProjectStream = vbaStorage.CreateStream(StreamId.VbaProject);
             var vbaProject = new VbaProjectStream();
             var vbaProjectContent = vbaProject.Generate();
             vbaProjectStream.Write(vbaProjectContent, 0, vbaProjectContent.Length);
 
             // dir stream
-            var dirStream = vbaStorage.CreateStream(StreamId.Dir);
+            using var dirStream = vbaStorage.CreateStream(StreamId.Dir);
             var dir = new DirStream();
             var dirContent = dir.GetData(project);
             var compressed = VbaCompression.Compress(dirContent);
@@ -115,6 +115,7 @@ namespace vbamc
                 moduleStream.WriteTo(vbaStorage);
             }
 
+            storage.Flush();
         }
 
         public void CompilePowerPointMacroFile(Stream outputMacroFileStream, Stream vbaProjectStream, PresentationDocumentType documentType, string? customSourcePath = null)

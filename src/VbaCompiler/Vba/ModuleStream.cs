@@ -19,7 +19,7 @@ namespace vbamc.Vba
         public void WriteTo(Storage storage)
         {
             var streamName = this.Module.Name;
-            var stream = storage.CreateStream(streamName);
+            using var stream = storage.CreateStream(streamName);
 
             var content = this.Module.ToModuleCode();
             var contentBytes = VbaEncodings.Default.GetBytes(content);
