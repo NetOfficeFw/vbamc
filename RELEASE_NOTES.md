@@ -1,3 +1,33 @@
+# v2.0.1
+
+VbaCompiler v2.0.1 is a hotfix release which ensures Microsoft Office macro files
+are generated correctly.
+
+### Fixes
+- Ensures the generated macro project files are valid.
+- Reverted OpenMcdf library update to maintain compatibility (kept at v2.4.1).
+
+### Installation
+
+Install as a .NET tool:
+
+```bash
+dotnet tool install --global vbamc --version 2.0.1
+```
+
+Upgrade from previous version:
+
+```bash
+dotnet tool update --global vbamc
+```
+
+Add `VbaCompiler` library to your project:
+
+```bash
+dotnet add package NetOfficeFw.VbaCompiler --version 2.0.1
+```
+
+
 # v2.0.0
 
 VbaCompiler v2.0.0 is a major release that brings support for .NET 10, modernizes dependencies, and improves performance.
