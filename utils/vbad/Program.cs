@@ -15,63 +15,58 @@ var targetPath = @"d:\dev\github\NetOfficeFw\vbamc\data\powerpoint\Macro2003_vba
 
 var source = Path.Combine(sourcePath, "vbaProject.bin");
 
-using var root = RootStorage.OpenRead(source);
+var vba = new CompoundFile(source);
+var root = vba.RootStorage;
 
-ProcessEntriesRecursive(root, "");
-var vbaStorage = root.OpenStorage("VBA");
-ProcessDirAndModules(vbaStorage);
+root.VisitEntries(item => ProcessFile(root, "", item), false);
+ProcessDirAndModules(root.GetStorage("VBA"));
 
 Console.WriteLine();
 Console.WriteLine($"  vbaProject.bin -> {targetPath}");
 Console.WriteLine("Project was decompiled.");
 
-void ProcessEntriesRecursive(Storage storage, string directory)
+void ProcessFile(CFStorage storage, string directory, CFItem item)
 {
-    foreach (var entry in storage.EnumerateEntries())
+    if (item.IsStream)
     {
-        if (entry.Type == EntryType.Stream)
+        var name = item.Name;
+        var target = Path.Combine(targetPath, directory, name + ".bin");
+
+        var stream = storage.GetStream(name);
+        var data = stream.GetData();
+
+        if (name == "dir")
         {
-            var name = entry.Name;
-            var target = Path.Combine(targetPath, directory, name + ".bin");
-
-            using var stream = storage.OpenStream(name);
-            var data = new byte[stream.Length];
-            stream.ReadExactly(data);
-
-            if (name == "dir")
+            try
             {
-                try
-                {
-                    data = VbaCompression.Decompress(data);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                data = VbaCompression.Decompress(data);
             }
-            
-            File.WriteAllBytes(target, data);
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
-        else if (entry.Type == EntryType.Storage)
+        
+        File.WriteAllBytes(target, data);
+    }
+    else if (item.IsStorage)
+    {
+        var s2 = (CFStorage)item;
+        var dir = Path.Combine(targetPath, s2.Name);
+        if (!Directory.Exists(dir))
         {
-            var dir = Path.Combine(targetPath, entry.Name);
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-
-            var subStorage = storage.OpenStorage(entry.Name);
-            ProcessEntriesRecursive(subStorage, entry.Name);
+            Directory.CreateDirectory(dir);
         }
+
+        s2.VisitEntries(item => ProcessFile(s2, s2.Name, item), false);
     }
 }
 
 
-void ProcessDirAndModules(Storage vbaStorage)
+void ProcessDirAndModules(CFStorage vbaStorage)
 {
-    using var dirStream = vbaStorage.OpenStream("dir");
-    var data = new byte[dirStream.Length];
-    dirStream.ReadExactly(data);
+    var dir = vbaStorage.GetStream("dir");
+    var data = dir.GetData();
     data = VbaCompression.Decompress(data);
     var target = Path.Combine(targetPath, "vba", "dir.bin");
 
@@ -81,20 +76,17 @@ void ProcessDirAndModules(Storage vbaStorage)
     foreach (var module in modules)
     {
         var name = module.Name;
-        if (name == null) continue;
-        
         var targetVbBin = Path.Combine(targetPath, "vba", name + ".bin");
         var targetVbText = Path.Combine(targetPath, "vba", name + ".vb");
 
-        using var stream = vbaStorage.OpenStream(name);
-        var dataVb = new byte[stream.Length];
-        stream.ReadExactly(dataVb);
-        var dataVbBin = dataVb.AsSpan().Slice((int)module.Offset).ToArray();
+        var stream = vbaStorage.GetStream(name);
+        Span<byte> dataVb = stream.GetData();
+        var dataVbBin = dataVb.Slice((int)module.Offset).ToArray();
         File.WriteAllBytes(targetVbBin, dataVbBin);
         
-        var decompressed = VbaCompression.Decompress(dataVbBin);
+        dataVb = VbaCompression.Decompress(dataVbBin);
 
-        var sourceCode = Encoding.GetEncoding(1252).GetString(decompressed);
+        var sourceCode = Encoding.GetEncoding(1252).GetString(dataVb);
 
         File.WriteAllText(targetVbText, sourceCode);
     }
