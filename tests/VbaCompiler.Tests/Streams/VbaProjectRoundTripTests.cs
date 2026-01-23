@@ -68,38 +68,44 @@ namespace vbamc.Tests.Streams
             };
         }
 
+        private static byte[] ReadStreamData(CfbStream stream)
+        {
+            var data = new byte[stream.Length];
+            stream.ReadExactly(data);
+            return data;
+        }
+
         [Test]
         public void CompileVbaProject_ShouldProduceDecompilableCompoundFile()
         {
-            using var compoundFile = new CompoundFile(new MemoryStream(_compiledVbaProject));
-            var root = compoundFile.RootStorage;
+            using var root = RootStorage.Open(new MemoryStream(_compiledVbaProject), StorageModeFlags.LeaveOpen);
 
             // Verify PROJECT stream exists and has content
             // Empty stream data indicates directory metadata wasn't flushed (broken OpenMcdf)
-            var projectStream = root.GetStream("PROJECT");
-            var projectData = projectStream.GetData();
+            using var projectStream = root.OpenStream("PROJECT");
+            var projectData = ReadStreamData(projectStream);
             ClassicAssert.Greater(projectData.Length, 0,
                 "PROJECT stream is empty - stream may not have been disposed");
 
             // Verify PROJECTwm stream exists and has content
-            var projectWmStream = root.GetStream("PROJECTwm");
-            var projectWmData = projectWmStream.GetData();
+            using var projectWmStream = root.OpenStream("PROJECTwm");
+            var projectWmData = ReadStreamData(projectWmStream);
             ClassicAssert.Greater(projectWmData.Length, 0,
                 "PROJECTwm stream is empty - stream may not have been disposed");
 
             // Verify VBA storage exists
-            var vbaStorage = root.GetStorage("VBA");
+            var vbaStorage = root.OpenStorage("VBA");
             ClassicAssert.IsNotNull(vbaStorage, "VBA storage should exist");
 
             // Verify _VBA_PROJECT stream exists and has content
-            var vbaProjectSubStream = vbaStorage.GetStream("_VBA_PROJECT");
-            var vbaProjectData = vbaProjectSubStream.GetData();
+            using var vbaProjectSubStream = vbaStorage.OpenStream("_VBA_PROJECT");
+            var vbaProjectData = ReadStreamData(vbaProjectSubStream);
             ClassicAssert.Greater(vbaProjectData.Length, 0,
                 "_VBA_PROJECT stream is empty - stream may not have been disposed");
 
             // Verify dir stream exists, has content, and can be decompressed
-            var dirStream = vbaStorage.GetStream("dir");
-            var dirData = dirStream.GetData();
+            using var dirStream = vbaStorage.OpenStream("dir");
+            var dirData = ReadStreamData(dirStream);
             ClassicAssert.Greater(dirData.Length, 0,
                 "dir stream is empty - stream may not have been disposed");
 
@@ -110,11 +116,12 @@ namespace vbamc.Tests.Streams
         [Test]
         public void CompileVbaProject_ShouldProduceReadableModules()
         {
-            using var compoundFile = new CompoundFile(new MemoryStream(_compiledVbaProject));
-            var vbaStorage = compoundFile.RootStorage.GetStorage("VBA");
+            using var root = RootStorage.Open(new MemoryStream(_compiledVbaProject), StorageModeFlags.LeaveOpen);
+            var vbaStorage = root.OpenStorage("VBA");
 
             // Verify dir stream has content before decompression
-            var dirStreamData = vbaStorage.GetStream("dir").GetData();
+            using var dirStreamObj = vbaStorage.OpenStream("dir");
+            var dirStreamData = ReadStreamData(dirStreamObj);
             ClassicAssert.Greater(dirStreamData.Length, 0,
                 "dir stream is empty - stream may not have been disposed");
 
@@ -127,8 +134,8 @@ namespace vbamc.Tests.Streams
             {
                 ClassicAssert.IsNotEmpty(module.Name, "Module name should not be empty");
 
-                var moduleStream = vbaStorage.GetStream(module.Name);
-                var moduleData = moduleStream.GetData();
+                using var moduleStream = vbaStorage.OpenStream(module.Name!);
+                var moduleData = ReadStreamData(moduleStream);
 
                 // Check raw stream data is not empty before processing
                 ClassicAssert.Greater(moduleData.Length, 0,
@@ -151,11 +158,12 @@ namespace vbamc.Tests.Streams
         [Test]
         public void CompileVbaProject_DecompiledCodeShouldMatchOriginalSource()
         {
-            using var compoundFile = new CompoundFile(new MemoryStream(_compiledVbaProject));
-            var vbaStorage = compoundFile.RootStorage.GetStorage("VBA");
+            using var root = RootStorage.Open(new MemoryStream(_compiledVbaProject), StorageModeFlags.LeaveOpen);
+            var vbaStorage = root.OpenStorage("VBA");
 
             // Verify dir stream has content before decompression
-            var dirStreamData = vbaStorage.GetStream("dir").GetData();
+            using var dirStreamObj = vbaStorage.OpenStream("dir");
+            var dirStreamData = ReadStreamData(dirStreamObj);
             ClassicAssert.Greater(dirStreamData.Length, 0,
                 "dir stream is empty - stream may not have been disposed");
 
@@ -164,8 +172,8 @@ namespace vbamc.Tests.Streams
             var modules = VbadDecompiler.DirStream.GetModules(dirData).ToList();
             var testModule = modules.First(m => m.Name == "TestModule");
 
-            var moduleStream = vbaStorage.GetStream(testModule.Name!);
-            var moduleData = moduleStream.GetData();
+            using var moduleStream = vbaStorage.OpenStream(testModule.Name!);
+            var moduleData = ReadStreamData(moduleStream);
 
             // Check raw stream data is not empty
             ClassicAssert.Greater(moduleData.Length, 0,
@@ -184,11 +192,12 @@ namespace vbamc.Tests.Streams
         [Test]
         public void CompileVbaProject_WithMultipleModules_AllShouldMatchOriginalSource()
         {
-            using var compoundFile = new CompoundFile(new MemoryStream(_compiledMultiModuleVbaProject));
-            var vbaStorage = compoundFile.RootStorage.GetStorage("VBA");
+            using var root = RootStorage.Open(new MemoryStream(_compiledMultiModuleVbaProject), StorageModeFlags.LeaveOpen);
+            var vbaStorage = root.OpenStorage("VBA");
 
             // Verify dir stream has content before decompression
-            var dirStreamData = vbaStorage.GetStream("dir").GetData();
+            using var dirStreamObj = vbaStorage.OpenStream("dir");
+            var dirStreamData = ReadStreamData(dirStreamObj);
             ClassicAssert.Greater(dirStreamData.Length, 0,
                 "dir stream is empty - stream may not have been disposed");
 
@@ -206,8 +215,8 @@ namespace vbamc.Tests.Streams
 
             foreach (var module in modules)
             {
-                var moduleStream = vbaStorage.GetStream(module.Name);
-                var moduleData = moduleStream.GetData();
+                using var moduleStream = vbaStorage.OpenStream(module.Name!);
+                var moduleData = ReadStreamData(moduleStream);
 
                 // Check raw stream data is not empty before processing
                 ClassicAssert.Greater(moduleData.Length, 0,
