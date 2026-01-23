@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Kavod.Vba.Compression;
 using OpenMcdf;
+using vbamc.Vba;
 using VbadDecompiler = vbad;
 
 namespace vbamc.Tests.Streams
@@ -223,6 +225,132 @@ namespace vbamc.Tests.Streams
                     $"Unexpected module '{module.Name}' found in compiled project");
                 ClassicAssert.AreEqual(expectedSources[module.Name!], decompressedSource,
                     $"Decompiled source for module '{module.Name}' should exactly match the original source with VBA headers");
+            }
+        }
+
+        [Test]
+        public void CompileVbaProject_ShouldMatchGoldenFile()
+        {
+            // Use fixed values to ensure deterministic output
+            var fixedGuid = new Guid("12345678-1234-1234-1234-123456789ABC");
+            var originalRandomGenerator = VbaEncryption.CreateRandomGenerator;
+
+            try
+            {
+                // Replace random generator with deterministic one
+                VbaEncryption.CreateRandomGenerator = () => new DeterministicRandomNumberGenerator();
+
+                var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "data");
+                var modulePath = Path.Combine(sourcePath, "TestModule.vb");
+
+                var compiler = new VbaCompiler
+                {
+                    ProjectId = fixedGuid,
+                    ProjectName = "GoldenTest",
+                    ProjectVersion = "1.0.0",
+                    CompanyName = "TestCompany"
+                };
+                compiler.AddModule(modulePath);
+
+                using var stream = compiler.CompileVbaProject();
+                var compiledBytes = stream.ToArray();
+
+                // Mask out compound file timestamps that vary between runs
+                // These are at offsets in the directory entries (varies by file structure)
+                MaskCompoundFileTimestamps(compiledBytes);
+
+                var goldenFilePath = Path.Combine(sourcePath, "vbaProject.bin");
+
+                if (!File.Exists(goldenFilePath))
+                {
+                    // Generate golden file if it doesn't exist
+                    File.WriteAllBytes(goldenFilePath, compiledBytes);
+                    Assert.Inconclusive($"Golden file created at {goldenFilePath}. Re-run the test to validate.");
+                }
+
+                var goldenBytes = File.ReadAllBytes(goldenFilePath);
+                MaskCompoundFileTimestamps(goldenBytes);
+
+                ClassicAssert.AreEqual(goldenBytes, compiledBytes,
+                    "Compiled VBA project should match the golden file byte-for-byte (excluding timestamps)");
+            }
+            finally
+            {
+                // Restore original random generator
+                VbaEncryption.CreateRandomGenerator = originalRandomGenerator;
+            }
+        }
+
+        /// <summary>
+        /// Masks out timestamp fields in compound file directory entries.
+        /// Compound files have 128-byte directory entries with timestamps at specific offsets.
+        /// </summary>
+        private static void MaskCompoundFileTimestamps(byte[] data)
+        {
+            // Compound file directory entries start at sector 0 (offset 512) or later
+            // Each entry is 128 bytes with creation time at offset 100 and modification time at offset 108
+            // The directory sector location is specified in the header at offset 48
+
+            if (data.Length < 512)
+                return;
+
+            // Read directory sector location from header (offset 48, 4 bytes, little-endian)
+            int directorySectorIndex = BitConverter.ToInt32(data, 48);
+            if (directorySectorIndex < 0)
+                return;
+
+            // Sector size is typically 512 bytes for compound files with version 3
+            const int sectorSize = 512;
+            const int headerSize = 512;
+            int directoryOffset = headerSize + (directorySectorIndex * sectorSize);
+
+            // Mask timestamps in all directory entries
+            const int entrySize = 128;
+            const int creationTimeOffset = 100;
+            const int modificationTimeOffset = 108;
+            const int timestampSize = 8;
+
+            for (int entryStart = directoryOffset;
+                 entryStart + entrySize <= data.Length;
+                 entryStart += entrySize)
+            {
+                // Check if this looks like a valid entry (first byte of name should be non-zero for used entries)
+                if (data[entryStart] == 0 && data[entryStart + 1] == 0)
+                    break; // End of entries
+
+                // Mask creation time
+                for (int i = 0; i < timestampSize; i++)
+                    data[entryStart + creationTimeOffset + i] = 0;
+
+                // Mask modification time
+                for (int i = 0; i < timestampSize; i++)
+                    data[entryStart + modificationTimeOffset + i] = 0;
+            }
+        }
+
+        /// <summary>
+        /// A deterministic random number generator for testing purposes.
+        /// Produces a fixed repeatable sequence independent of .NET version.
+        /// </summary>
+        private sealed class DeterministicRandomNumberGenerator : RandomNumberGenerator
+        {
+            private int _index;
+
+            public override void GetBytes(byte[] data)
+            {
+                for (int i = 0; i < data.Length; i++)
+                {
+                    data[i] = (byte)((_index++ * 17 + 31) % 256);
+                }
+            }
+
+            public override void GetNonZeroBytes(byte[] data)
+            {
+                for (int i = 0; i < data.Length; i++)
+                {
+                    // Generate values 1-255 (never zero)
+                    data[i] = (byte)((_index++ * 17 + 31) % 255 + 1);
+                }
             }
         }
     }
