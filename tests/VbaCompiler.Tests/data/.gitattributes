@@ -1,0 +1,2 @@
+# VBA source files must have Windows line endings (CRLF)
+*.vb text eol=crlf
