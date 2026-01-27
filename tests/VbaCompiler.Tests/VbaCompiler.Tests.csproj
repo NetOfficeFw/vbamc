@@ -43,7 +43,7 @@
 
   <ItemGroup>
     <PackageReference Include="NetOfficeFw.VbaCompression" Version="3.0.1" />
-    <PackageReference Include="OpenMcdf" Version="2.4.1" />
+    <PackageReference Include="OpenMcdf" Version="3.1.0" />
   </ItemGroup>
 
 </Project>

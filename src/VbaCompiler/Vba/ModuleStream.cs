@@ -16,16 +16,16 @@ namespace vbamc.Vba
 
         public ModuleUnit Module { get; }
 
-        public void WriteTo(CFStorage storage)
+        public void WriteTo(Storage storage)
         {
             var streamName = this.Module.Name;
-            var stream = storage.AddStream(streamName);
+            using var stream = storage.CreateStream(streamName);
 
             var content = this.Module.ToModuleCode();
             var contentBytes = VbaEncodings.Default.GetBytes(content);
             var compressedBytes = VbaCompression.Compress(contentBytes);
 
-            stream.SetData(compressedBytes);
+            stream.Write(compressedBytes, 0, compressedBytes.Length);
         }
     }
 }
