@@ -2,6 +2,7 @@
 // Licensed under MIT-style license (see LICENSE.txt file).
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,8 @@ namespace vbamc.Tests.Streams
     {
         private byte[] _compiledVbaProject = null!;
         private byte[] _compiledMultiModuleVbaProject = null!;
+        private string _testModuleExpectedSource = null!;
+        private string _classExpectedSource = null!;
 
         [SetUp]
         public void Setup()
@@ -33,6 +36,12 @@ namespace vbamc.Tests.Streams
             var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "data");
             var modulePath = Path.Combine(sourcePath, "TestModule.vb");
             var classPath = Path.Combine(sourcePath, "Class.vb");
+
+            // Generate expected compiled source using ModuleUnit (includes VBA headers)
+            var testModule = ModuleUnit.FromFile(modulePath, ModuleUnitType.Module, null);
+            var classModule = ModuleUnit.FromFile(classPath, ModuleUnitType.Class, null);
+            _testModuleExpectedSource = testModule.ToModuleCode();
+            _classExpectedSource = classModule.ToModuleCode();
 
             // Compile single-module project
             var compiler = CreateTestCompiler("RoundTripTest");
@@ -140,7 +149,7 @@ namespace vbamc.Tests.Streams
         }
 
         [Test]
-        public void CompileVbaProject_DecompiledCodeShouldContainOriginalSource()
+        public void CompileVbaProject_DecompiledCodeShouldMatchOriginalSource()
         {
             using var compoundFile = new CompoundFile(new MemoryStream(_compiledVbaProject));
             var vbaStorage = compoundFile.RootStorage.GetStorage("VBA");
@@ -168,16 +177,12 @@ namespace vbamc.Tests.Streams
 
             var decompressedSource = Encoding.GetEncoding(1252).GetString(VbaCompression.Decompress(moduleCode));
 
-            ClassicAssert.IsTrue(decompressedSource.Contains("HelloWorld"),
-                "Decompiled source should contain 'HelloWorld' function");
-            ClassicAssert.IsTrue(decompressedSource.Contains("AddNumbers"),
-                "Decompiled source should contain 'AddNumbers' function");
-            ClassicAssert.IsTrue(decompressedSource.Contains("MsgBox"),
-                "Decompiled source should contain 'MsgBox' call");
+            ClassicAssert.AreEqual(_testModuleExpectedSource, decompressedSource,
+                "Decompiled source should exactly match the original source with VBA headers");
         }
 
         [Test]
-        public void CompileVbaProject_WithMultipleModules_AllShouldBeDecompilable()
+        public void CompileVbaProject_WithMultipleModules_AllShouldMatchOriginalSource()
         {
             using var compoundFile = new CompoundFile(new MemoryStream(_compiledMultiModuleVbaProject));
             var vbaStorage = compoundFile.RootStorage.GetStorage("VBA");
@@ -192,6 +197,13 @@ namespace vbamc.Tests.Streams
             var modules = VbadDecompiler.DirStream.GetModules(dirData).ToList();
             ClassicAssert.AreEqual(2, modules.Count, "Should have exactly 2 modules (TestModule and Class)");
 
+            // Map of module names to their expected source
+            var expectedSources = new Dictionary<string, string>
+            {
+                { "TestModule", _testModuleExpectedSource },
+                { "Class", _classExpectedSource }
+            };
+
             foreach (var module in modules)
             {
                 var moduleStream = vbaStorage.GetStream(module.Name);
@@ -205,8 +217,12 @@ namespace vbamc.Tests.Streams
                 ClassicAssert.Greater(moduleCode.Length, 0,
                     $"Module '{module.Name}' code after offset is empty");
 
-                var decompressedCode = VbaCompression.Decompress(moduleCode);
-                ClassicAssert.IsNotNull(decompressedCode, $"Module '{module.Name}' should decompress successfully");
+                var decompressedSource = Encoding.GetEncoding(1252).GetString(VbaCompression.Decompress(moduleCode));
+
+                ClassicAssert.IsTrue(expectedSources.ContainsKey(module.Name!),
+                    $"Unexpected module '{module.Name}' found in compiled project");
+                ClassicAssert.AreEqual(expectedSources[module.Name!], decompressedSource,
+                    $"Decompiled source for module '{module.Name}' should exactly match the original source with VBA headers");
             }
         }
     }
