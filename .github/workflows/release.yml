@@ -68,7 +68,7 @@ jobs:
           ${{ github.workspace }}/src/vbamc/README.md
 
     - name: authenticate nuget.org
-      uses: NuGet/login@v1
+      uses: NetOfficeFw/nuget-login@v2
       id: nuget
       with:
         user: ${{ vars.NUGET_PUSH_USER }}
