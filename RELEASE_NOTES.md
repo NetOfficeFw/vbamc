@@ -1,3 +1,34 @@
+# v2.0.2
+
+VbaCompiler v2.0.2 updates the OpenMcdf library to v3 and improves
+the reliability of compiled VBA source code.
+
+### Changes
+- Updated OpenMcdf library to v3.1.0 for improved CFB file format handling.
+- Ensures the compiled VBA source code matches the original content.
+
+
+### Installation
+
+Install as a .NET tool:
+
+```bash
+dotnet tool install --global vbamc --version 2.0.2
+```
+
+Upgrade from previous version:
+
+```bash
+dotnet tool update --global vbamc
+```
+
+Add `VbaCompiler` library to your project:
+
+```bash
+dotnet add package NetOfficeFw.VbaCompiler --version 2.0.2
+```
+
+
 # v2.0.1
 
 VbaCompiler v2.0.1 is a hotfix release which ensures Microsoft Office macro files
