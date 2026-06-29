@@ -34,7 +34,7 @@ jobs:
         submodules: true
 
     - name: setup dotnet
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v5.3.0
       with:
         dotnet-version: |
           8
@@ -80,7 +80,7 @@ jobs:
         submodules: true
 
     - name: setup dotnet
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v5.3.0
       with:
         dotnet-version: |
           8
