@@ -1,3 +1,12 @@
+# v2.0.3
+
+VbaCompiler v2.0.3 updates the OpenMcdf library to v3.1.4 which fixes several vulnerabilities reported in OpenMcdf.
+
+### Changes
+- Updated OpenMcdf library to v3.1.4 to fix moderate severity vulnerabilities.
+
+
+
 # v2.0.2
 
 VbaCompiler v2.0.2 updates the OpenMcdf library to v3 and improves
