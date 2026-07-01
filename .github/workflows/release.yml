@@ -1,6 +1,7 @@
 name: release
 
 on:
+  workflow_dispatch:
   push:
     tags: [ 'v*.*.*' ]
 
@@ -38,12 +39,6 @@ jobs:
           8
           10
 
-    - name: setup dotnet sign tool
-      run: dotnet tool install --verbosity minimal --global sign --version 0.9.1-beta.26330.1
-
-    - name: setup Knapcode.CertificateExtractor tool
-      run: dotnet tool install --verbosity minimal --global Knapcode.CertificateExtractor --version 0.1.1
-
     - name: restore
       run: dotnet restore
 
@@ -58,6 +53,43 @@ jobs:
         dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
         dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
 
+    - name: publish unsigned packages
+      uses: actions/upload-artifact@v7
+      with:
+        name: vbamc_unsigned_packages
+        path: |
+          ${{ github.workspace }}/dist
+          ${{ github.workspace }}/src/VbaCompiler/README.md
+          ${{ github.workspace }}/src/vbamc/README.md
+
+  sign:
+    needs: release
+    runs-on: windows-2025
+
+    environment:
+      name: production
+      url: https://www.nuget.org/packages/NetOfficeFw.VbaCompiler
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v6
+
+    - name: download unsigned packages
+      uses: actions/download-artifact@v8
+      with:
+        name: vbamc_unsigned_packages
+
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10
+
+    - name: setup dotnet sign tool
+      run: dotnet tool install --verbosity minimal --global sign --version 0.9.1-beta.26330.1
+
+    - name: setup Knapcode.CertificateExtractor tool
+      run: dotnet tool install --verbosity minimal --global Knapcode.CertificateExtractor --version 0.1.1
+
     - name: azure login
       uses: azure/login@v3
       with:
@@ -66,17 +98,17 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
 
     - name: sign nuget packages
-      working-directory: '${{ github.workspace }}/dist'
+      working-directory: '${{ github.workspace }}\\dist'
       run: |
-        sign code artifact-signing ./*.nupkg \
-        --publisher-name "NetOfficeFw" \
-        --description "vbamc tool" \
-        --description-url "https://github.com/NetOfficeFw/vbamc" \
-        --artifact-signing-endpoint "${{ secrets.ARTIFACTS_SIGNING_ENDPOINT }}" \
-        --artifact-signing-account "${{ secrets.ARTIFACTS_SIGNING_ACCOUNT_NAME }}" \
-        --artifact-signing-certificate-profile "${{ secrets.ARTIFACTS_SIGNING_CERTIFICATE_PROFILE }}" \
-        --file-digest SHA256 \
-        --timestamp-url http://timestamp.acs.microsoft.com \
+        sign code artifact-signing *.nupkg `
+        --publisher-name "NetOfficeFw" `
+        --description "vbamc tool" `
+        --description-url "https://github.com/NetOfficeFw/vbamc" `
+        --artifact-signing-endpoint "${{ secrets.ARTIFACTS_SIGNING_ENDPOINT }}" `
+        --artifact-signing-account "${{ secrets.ARTIFACTS_SIGNING_ACCOUNT_NAME }}" `
+        --artifact-signing-certificate-profile "${{ secrets.ARTIFACTS_SIGNING_CERTIFICATE_PROFILE }}" `
+        --file-digest SHA256 `
+        --timestamp-url http://timestamp.acs.microsoft.com `
         --timestamp-digest SHA256
 
     - name: attestation
@@ -85,32 +117,29 @@ jobs:
         subject-path: 'dist/*.nupkg'
         show-summary: true
 
-    - name: publish artifact
+    - name: extract code signing certificate
+      run: |
+        $nupkg = Get-ChildItem -Path '${{ github.workspace }}\dist' -Filter '*.nupkg' | Select-Object -First 1
+        nuget-cert-extractor --file $nupkg --output '${{ github.workspace }}\dist' --code-signing --author --leaf
+
+    - name: publish signed packages
       uses: actions/upload-artifact@v7
       with:
         name: vbamc_packages
-        path: |
-          ${{ github.workspace }}/dist
-          ${{ github.workspace }}/src/VbaCompiler/README.md
-          ${{ github.workspace }}/src/vbamc/README.md
-
-    - name: extract code signing certificate
-      run: |
-        nupkg=$(find '${{ github.workspace }}/dist' -maxdepth 1 -name '*.nupkg' -print -quit)
-        nuget-cert-extractor --file "$nupkg" --output '${{ github.workspace }}/dist' --code-signing --author --leaf
+        path: '${{ github.workspace }}\dist'
 
     - name: publish code signing certificate
       id: certificate_artifact
       uses: actions/upload-artifact@v7
       with:
         name: certificate
-        path: '${{ github.workspace }}/dist/*.cer'
+        path: '${{ github.workspace }}\dist\*.cer'
 
     - name: signing certificate instructions
       run: |
-        certificate_url='${{ steps.certificate_artifact.outputs.artifact-url }}'
-        echo 'Before approving the publish job, upload the code-signing certificate to NuGet Gallery via Account Settings: <https://www.nuget.org/account>.' >> "$GITHUB_STEP_SUMMARY"
-        echo "Download the [code-signing certificate]($certificate_url)." >> "$GITHUB_STEP_SUMMARY"
+        $certificateUrl = '${{ steps.certificate_artifact.outputs.artifact-url }}'
+        'Before approving the publish job, upload the code-signing certificate to NuGet Gallery via Account Settings: <https://www.nuget.org/account>.' >> $env:GITHUB_STEP_SUMMARY
+        "Download the [code-signing certificate]($certificateUrl)." >> $env:GITHUB_STEP_SUMMARY
 
     - name: release
       uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
@@ -120,7 +149,7 @@ jobs:
         body_path: ${{ github.workspace }}/RELEASE_NOTES.md
 
   publish:
-    needs: release
+    needs: sign
     runs-on: ubuntu-24.04
 
     environment:
@@ -135,6 +164,7 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         name: vbamc_packages
+        path: ${{ github.workspace }}/dist
 
     - name: authenticate nuget.org
       uses: NetOfficeFw/nuget-login@v2
