@@ -2,6 +2,12 @@ name: release
 
 on:
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Create a draft prerelease without publishing NuGet packages
+        required: false
+        default: true
+        type: boolean
   push:
     tags: [ 'v*.*.*' ]
 
@@ -147,6 +153,8 @@ jobs:
       with:
         name: 'vbamc ${{ github.ref_name }}'
         body_path: ${{ github.workspace }}/RELEASE_NOTES.md
+        draft: ${{ github.event.inputs.dry_run == 'true' }}
+        prerelease: ${{ github.event.inputs.dry_run == 'true' }}
 
   publish:
     needs: sign
@@ -173,6 +181,7 @@ jobs:
         user: ${{ vars.NUGET_PUSH_USER }}
 
     - name: publish
+      if: ${{ github.event.inputs.dry_run != 'true' }}
       working-directory: '${{ github.workspace }}/dist'
       run: |
         dotnet nuget push "*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
