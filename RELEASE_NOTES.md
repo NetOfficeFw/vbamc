@@ -7,6 +7,27 @@ VbaCompiler v2.0.3 updates the OpenMcdf library to v3.1.4 which fixes several vu
 - Updated DocumentFormat.OpenXml to v3.5.1
 
 
+### Installation
+
+Install as a .NET tool:
+
+```bash
+dotnet tool install --global vbamc --version 2.0.3
+```
+
+Upgrade from previous version:
+
+```bash
+dotnet tool update --global vbamc
+```
+
+Add `VbaCompiler` library to your project:
+
+```bash
+dotnet add package NetOfficeFw.VbaCompiler --version 2.0.3
+```
+
+
 # v2.0.2
 
 VbaCompiler v2.0.2 updates the OpenMcdf library to v3 and improves
