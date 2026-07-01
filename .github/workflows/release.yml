@@ -178,7 +178,7 @@ jobs:
       uses: NetOfficeFw/nuget-login@v2
       id: nuget
       with:
-        user: ${{ vars.NUGET_PUSH_USER }}
+        user: ${{ secrets.NUGET_TRUSTED_PUBLISHING_USER }}
 
     - name: publish
       if: ${{ github.event.inputs.dry_run != 'true' }}
