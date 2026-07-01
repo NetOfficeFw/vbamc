@@ -38,6 +38,12 @@ jobs:
           8
           10
 
+    - name: setup dotnet sign tool
+      run: dotnet tool install --verbosity minimal --global sign --version 0.9.1-beta.26330.1
+
+    - name: setup Knapcode.CertificateExtractor tool
+      run: dotnet tool install --verbosity minimal --global Knapcode.CertificateExtractor --version 0.1.1
+
     - name: restore
       run: dotnet restore
 
@@ -51,6 +57,27 @@ jobs:
       run: |
         dotnet pack src/VbaCompiler/VbaCompiler.csproj --no-build --no-restore -o dist
         dotnet pack src/vbamc/vbamc.csproj --no-build --no-restore -o dist
+
+    - name: azure login
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.ARTIFACTS_SIGNING_CLIENT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: sign nuget packages
+      working-directory: '${{ github.workspace }}/dist'
+      run: |
+        sign code artifact-signing ./*.nupkg \
+        --publisher-name "NetOfficeFw" \
+        --description "vbamc tool" \
+        --description-url "https://github.com/NetOfficeFw/vbamc" \
+        --artifact-signing-endpoint "${{ secrets.ARTIFACTS_SIGNING_ENDPOINT }}" \
+        --artifact-signing-account "${{ secrets.ARTIFACTS_SIGNING_ACCOUNT_NAME }}" \
+        --artifact-signing-certificate-profile "${{ secrets.ARTIFACTS_SIGNING_CERTIFICATE_PROFILE }}" \
+        --file-digest SHA256 \
+        --timestamp-url http://timestamp.acs.microsoft.com \
+        --timestamp-digest SHA256
 
     - name: attestation
       uses: actions/attest-build-provenance@v4
@@ -67,6 +94,48 @@ jobs:
           ${{ github.workspace }}/src/VbaCompiler/README.md
           ${{ github.workspace }}/src/vbamc/README.md
 
+    - name: extract code signing certificate
+      run: |
+        nupkg=$(find '${{ github.workspace }}/dist' -maxdepth 1 -name '*.nupkg' -print -quit)
+        nuget-cert-extractor --file "$nupkg" --output '${{ github.workspace }}/dist' --code-signing --author --leaf
+
+    - name: publish code signing certificate
+      id: certificate_artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: certificate
+        path: '${{ github.workspace }}/dist/*.cer'
+
+    - name: signing certificate instructions
+      run: |
+        certificate_url='${{ steps.certificate_artifact.outputs.artifact-url }}'
+        echo 'Before approving the publish job, upload the code-signing certificate to NuGet Gallery via Account Settings: <https://www.nuget.org/account>.' >> "$GITHUB_STEP_SUMMARY"
+        echo "Download the [code-signing certificate]($certificate_url)." >> "$GITHUB_STEP_SUMMARY"
+
+    - name: release
+      uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
+      if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
+      with:
+        name: 'vbamc ${{ github.ref_name }}'
+        body_path: ${{ github.workspace }}/RELEASE_NOTES.md
+
+  publish:
+    needs: release
+    runs-on: ubuntu-24.04
+
+    environment:
+      name: nuget-gallery
+      url: https://www.nuget.org/packages/NetOfficeFw.VbaCompiler
+
+    permissions:
+      id-token: write
+
+    steps:
+    - name: download packages
+      uses: actions/download-artifact@v8
+      with:
+        name: vbamc_packages
+
     - name: authenticate nuget.org
       uses: NetOfficeFw/nuget-login@v2
       id: nuget
@@ -76,13 +145,6 @@ jobs:
     - name: publish
       working-directory: '${{ github.workspace }}/dist'
       run: |
-          dotnet nuget push "*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+        dotnet nuget push "*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
       env:
         NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
-
-    - name: release
-      uses: softprops/action-gh-release@v3
-      if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
-      with:
-        name: 'vbamc ${{ github.ref_name }}'
-        body_path: ${{ github.workspace }}/RELEASE_NOTES.md
