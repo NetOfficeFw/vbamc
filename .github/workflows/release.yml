@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: setup dotnet
       uses: actions/setup-dotnet@v5
@@ -78,7 +78,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: download unsigned packages
       uses: actions/download-artifact@v8
